@@ -630,8 +630,8 @@ function AddModal({players,events,lUser,isAllowed,onClose,showToast}:any){
               <div className="fl">Tipo de evento *</div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:6,marginBottom:16}}>
                 {events.map((ev:any)=>(
-                  <button key={ev.id} onClick={()=>setSelEv(ev)} style={{padding:"10px 8px",borderRadius:9,border:`2px solid ${selEv?.id===ev.id?"var(--navy)":"var(--g100)"}`,background:selEv?.id===ev.id?"var(--g50)":"#fff",cursor:"pointer",textAlign:"center",transition:"all .12s"}}>
-                    <div style={{fontSize:12,fontWeight:700,color:"var(--navy)"}}>{ev.name}</div>
+                  <button key={ev.id} onClick={()=>setSelEv(ev)} className={`logi-ev-btn${selEv?.id===ev.id?" selected":""}`} style={{padding:"10px 8px",borderRadius:10,border:`2px solid ${selEv?.id===ev.id?"var(--navy)":"var(--g200)"}`,cursor:"pointer",textAlign:"center",transition:"all .12s"}}>
+                    <div style={{fontSize:12,fontWeight:700}}>{ev.name}</div>
                     <div style={{fontSize:11,color:ev.points>=0?"var(--g400)":"var(--red)",marginTop:2,fontWeight:600}}>{ev.points>0?"+":""}{ev.points} pts</div>
                   </button>
                 ))}
@@ -640,7 +640,7 @@ function AddModal({players,events,lUser,isAllowed,onClose,showToast}:any){
               <div style={{position:"relative",marginBottom:12}}>
                 <input ref={inputRef} className="input" value={q} onChange={e=>{setQ(e.target.value);setShowList(true)}} onFocus={()=>setShowList(true)} onBlur={()=>setTimeout(()=>setShowList(false),200)} placeholder="Cerca giocatore..."/>
                 {showList&&q&&(
-                  <div style={{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,background:"#fff",border:"1px solid var(--g100)",borderRadius:10,boxShadow:"var(--sh-md)",maxHeight:200,overflowY:"auto",zIndex:50}}>
+                  <div className="autocomplete-drop" style={{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,border:"1px solid var(--g100)",borderRadius:10,boxShadow:"var(--sh-md)",maxHeight:200,overflowY:"auto",zIndex:50}}>
                     {filteredP.slice(0,8).map((p:any)=>(
                       <div key={p.id} onMouseDown={e=>{e.preventDefault();setSelIds(ids=>ids.includes(p.id)?ids.filter(x=>x!==p.id):[...ids,p.id]);setQ("");setShowList(false)}} style={{padding:"9px 14px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid var(--g50)",fontSize:13}}>
                         <span>{p.name}</span>{selIds.includes(p.id)&&<span style={{color:"var(--navy)",fontWeight:700}}>✓</span>}
@@ -650,7 +650,7 @@ function AddModal({players,events,lUser,isAllowed,onClose,showToast}:any){
                 )}
               </div>
               {selPlayers.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}}>{selPlayers.map((p:any)=><span key={p.id} style={{display:"flex",alignItems:"center",gap:5,background:"var(--g50)",color:"var(--navy)",fontSize:12,fontWeight:600,padding:"3px 10px",borderRadius:99}}>{p.name}<button onClick={()=>setSelIds(ids=>ids.filter(x=>x!==p.id))} style={{background:"none",border:"none",color:"var(--navy)",fontSize:13,cursor:"pointer",padding:0}}>×</button></span>)}</div>}
-              {!selIds.length&&<div><div className="fl">Equipo</div><div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:6}}>{TEAMS.map(t=><button key={t.id} onClick={()=>setTeamId(teamId===t.id?"":t.id)} style={{padding:"9px",borderRadius:8,border:`2px solid ${teamId===t.id?t.color:"var(--g100)"}`,background:teamId===t.id?t.bg:"#fff",color:t.color,fontWeight:700,fontSize:12,cursor:"pointer"}}>{t.name}</button>)}</div></div>}
+              {!selIds.length&&<div><div className="fl">Equipo</div><div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:6}}>{TEAMS.map(t=><button key={t.id} onClick={()=>setTeamId(teamId===t.id?"":t.id)} className="logi-team-btn" style={{padding:"9px",borderRadius:10,border:`2px solid ${teamId===t.id?t.color:"var(--g200)"}`,background:teamId===t.id?t.bg:"transparent",color:t.color,fontWeight:700,fontSize:12,cursor:"pointer"}}>{t.name}</button>)}</div></div>}
             </div>
             <div>
               {showQty&&<div style={{marginBottom:14}}><div className="fl">Cantidad</div><input className="input" type="number" min={1} value={qty} onChange={e=>setQty(parseInt(e.target.value)||1)}/></div>}

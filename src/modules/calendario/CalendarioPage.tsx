@@ -434,24 +434,24 @@ export default function CalendarioPage() {
 function EventRow({ evento, past, onView, onEdit, onDelete }: { evento: Evento; past?: boolean; onView: () => void; onEdit?: () => void; onDelete?: () => void }) {
   const m = tipoMeta(evento.tipo)
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 18px', background: '#fff', border: '1px solid var(--g100)', borderRadius: 11, marginBottom: 8, opacity: past ? 0.65 : 1, transition: 'opacity 0.1s' }}>
-      <div style={{ width: 44, height: 44, borderRadius: 10, background: m.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{m.icon}</div>
+    <div className="evento-row" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 14, marginBottom: 8, opacity: past ? 0.6 : 1, transition: 'opacity 0.1s' }}>
+      <div style={{ width: 44, height: 44, borderRadius: 11, background: m.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{m.icon}</div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--navy)' }}>{evento.titulo}</span>
-          {evento.tipo === 'partido' && evento.rival && <span style={{ fontSize: 12, color: 'var(--g400)' }}>vs {evento.rival}</span>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3, flexWrap: 'wrap' }}>
+          <span className="evento-title" style={{ fontSize: 13, fontWeight: 700 }}>{evento.titulo}</span>
+          {evento.tipo === 'partido' && evento.rival && <span className="evento-sub" style={{ fontSize: 12 }}>vs {evento.rival}</span>}
           {evento.obligatorio && <span style={{ background: 'var(--red-l)', color: 'var(--red)', fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 20 }}>obligatorio</span>}
         </div>
-        <div style={{ fontSize: 12, color: 'var(--g400)', display: 'flex', gap: 10 }}>
+        <div className="evento-meta" style={{ fontSize: 11, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <span>{new Date(evento.fecha).toLocaleDateString('es-AR', { weekday: 'short', day: '2-digit', month: 'short' })}</span>
           {evento.horaInicio && <span>{evento.horaInicio}{evento.horaFin ? ` → ${evento.horaFin}` : ''}</span>}
           {evento.lugar && <span>📍 {evento.lugar}</span>}
         </div>
       </div>
       <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
-        <button onClick={onView} style={{ padding: '5px 10px', border: '1px solid var(--g100)', borderRadius: 7, background: '#fff', color: 'var(--g500)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Vedi</button>
-        {onEdit && <button onClick={onEdit} style={{ padding: '5px 10px', border: '1px solid var(--g200)', borderRadius: 7, background: 'var(--g50)', color: 'var(--red)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Modifica</button>}
-        {onDelete && <button onClick={onDelete} style={{ padding: '5px 9px', border: '1px solid #FEECEC', borderRadius: 7, background: 'var(--red-l)', color: 'var(--red)', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>✕</button>}
+        <button onClick={onView} className="evento-btn">Vedi</button>
+        {onEdit && <button onClick={onEdit} className="evento-btn evento-btn-edit">Modifica</button>}
+        {onDelete && <button onClick={onDelete} className="evento-btn evento-btn-del">✕</button>}
       </div>
     </div>
   )

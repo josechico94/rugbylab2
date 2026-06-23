@@ -650,3 +650,111 @@ select.input{
     background:#050A12 !important;
   }
 }
+
+/* ================================================================
+   COMPONENT-SPECIFIC FIXES — Mobile-first
+   ================================================================ */
+
+/* ── EVENTO ROW (Calendario) ─── */
+.evento-row {
+  background: var(--white);
+  border: 1px solid var(--g100);
+}
+.evento-title { color: var(--navy) }
+.evento-sub   { color: var(--g400) }
+.evento-meta  { color: var(--g400) }
+.evento-btn {
+  padding: 6px 11px; border: 1px solid var(--g100);
+  border-radius: 8px; background: var(--g50);
+  color: var(--g500); font-size: 11px; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+}
+.evento-btn-edit { background: var(--g50); color: var(--red); border-color: var(--g200) }
+.evento-btn-del  { background: var(--red-l); color: var(--red); border-color: #FEECEC }
+
+/* ── LOGISTICA MODAL BUTTONS ─── */
+.logi-ev-btn   { background: var(--white); color: var(--navy) }
+.logi-team-btn { background: transparent }
+
+/* ── NATIVE SELECT DROPDOWN ─── */
+select option { background: var(--white); color: var(--navy) }
+
+@media (max-width:768px) {
+
+  /* Evento row — dark */
+  .evento-row {
+    background: #0E1724 !important;
+    border-color: rgba(255,255,255,.07) !important;
+  }
+  .evento-title { color: #fff !important }
+  .evento-sub   { color: rgba(255,255,255,.45) !important }
+  .evento-meta  { color: rgba(255,255,255,.38) !important }
+  .evento-btn {
+    background: rgba(255,255,255,.07) !important;
+    border-color: rgba(255,255,255,.1) !important;
+    color: rgba(255,255,255,.65) !important;
+    font-size: 10px !important; padding: 5px 9px !important;
+    border-radius: 8px !important;
+  }
+  .evento-btn-edit { color: #FF7585 !important }
+  .evento-btn-del  { background: rgba(200,16,46,.18) !important; color: #FF7585 !important; border-color: transparent !important }
+
+  /* Logistica modal buttons — dark */
+  .logi-ev-btn {
+    background: rgba(255,255,255,.06) !important;
+    color: rgba(255,255,255,.85) !important;
+  }
+  .logi-ev-btn.selected {
+    background: rgba(10,22,40,.6) !important;
+    color: #fff !important;
+  }
+  .logi-team-btn {
+    background: transparent !important;
+    color: inherit !important;
+  }
+
+  /* Native select options dark */
+  select option {
+    background: #111B29 !important;
+    color: #fff !important;
+  }
+
+  /* Dropdowns / autocomplete lists */
+  [style*="background:\"#fff\""][style*="border:\"1px solid"],
+  [style*='background:"#fff"'] { background: #111B29 !important; color: #fff !important }
+
+  /* Filter pills (calendario top) — dark */
+  .cal-filter button {
+    background: rgba(255,255,255,.06) !important;
+    border-color: rgba(255,255,255,.12) !important;
+    color: rgba(255,255,255,.6) !important;
+  }
+
+  /* View mode toggle (Mes/Lista) */
+  .view-toggle {
+    background: rgba(255,255,255,.07) !important;
+    border-color: rgba(255,255,255,.1) !important;
+  }
+  .view-toggle button[style*="navy"] {
+    background: var(--red) !important;
+    color: #fff !important;
+  }
+
+  /* Login: center form vertically */
+  .login-right-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+
+  /* Autocomplete dropdown dark */
+  .autocomplete-drop {
+    background: #111B29 !important;
+    border-color: rgba(255,255,255,.1) !important;
+  }
+  .autocomplete-drop > div {
+    border-color: rgba(255,255,255,.06) !important;
+    color: rgba(255,255,255,.82) !important;
+  }
+  .autocomplete-drop > div:hover { background: rgba(255,255,255,.06) !important }
+}
