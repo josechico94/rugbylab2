@@ -635,3 +635,18 @@ select.input{
 @media (display-mode:standalone) {
   .mobile-topbar { padding-top:env(safe-area-inset-top,0px) !important }
 }
+
+/* ── LARGE DESKTOP ─── */
+@media (min-width:1600px) { .page { padding:28px 40px } }
+
+/* ── LOGIN PAGE MOBILE ─── */
+@media (max-width:768px) {
+  .login-left-panel { display:none !important }
+  .login-right-panel {
+    width:100% !important;
+    min-height:100dvh !important;
+    padding:48px 24px 40px !important;
+    box-shadow:none !important;
+    background:#050A12 !important;
+  }
+}

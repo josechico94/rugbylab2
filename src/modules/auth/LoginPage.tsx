@@ -37,7 +37,7 @@ export default function LoginPage() {
   return (
     <div style={{minHeight:'100dvh',background:'var(--navy)',display:'flex',overflow:'hidden',position:'relative'}}>
       {/* Left panel — desktop only */}
-      <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:48,position:'relative',overflow:'hidden'}}>
+      <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:48,position:'relative',overflow:'hidden'}} className="login-left-panel">
         <div style={{position:'absolute',inset:0,pointerEvents:'none'}}>
           <div style={{position:'absolute',top:'-10%',right:'-5%',width:'50%',paddingBottom:'50%',borderRadius:'50%',background:'radial-gradient(circle,rgba(200,16,46,.22) 0%,transparent 70%)'}}/>
           <div style={{position:'absolute',bottom:'-10%',left:'-5%',width:'42%',paddingBottom:'42%',borderRadius:'50%',background:'radial-gradient(circle,rgba(245,197,24,.12) 0%,transparent 70%)'}}/>
@@ -62,7 +62,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right panel — form */}
-      <div style={{width:'min(440px,100%)',background:'#fff',display:'flex',flexDirection:'column',justifyContent:'center',padding:'48px clamp(20px,5vw,40px)',boxShadow:'-20px 0 60px rgba(0,0,0,.2)',position:'relative',flexShrink:0}}>
+      <div style={{width:'min(440px,100%)',background:'#fff',display:'flex',flexDirection:'column',justifyContent:'center',padding:'48px clamp(20px,5vw,40px)',boxShadow:'-20px 0 60px rgba(0,0,0,.2)',position:'relative',flexShrink:0}} className="login-right-panel">
         <div style={{position:'absolute',top:0,left:0,right:0,height:4,background:'linear-gradient(90deg,var(--red),var(--gold))'}}/>
         <div style={{marginBottom:32}}>
           <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:'.05em',color:'var(--navy)',marginBottom:4}}>
