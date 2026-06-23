@@ -758,3 +758,237 @@ select option { background: var(--white); color: var(--navy) }
   }
   .autocomplete-drop > div:hover { background: rgba(255,255,255,.06) !important }
 }
+
+/* ================================================================
+   MOBILE v2 — All modules: modals, tables, forms, dark theme
+   ================================================================ */
+
+/* Horizontal scroll wrapper for dense tables */
+.table-scroll-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.table-scroll-wrap::-webkit-scrollbar { display: none }
+
+@media (max-width: 768px) {
+
+  /* ── MODULE TABS (dark) ─── */
+  .module-tabs {
+    background: rgba(255,255,255,.07) !important;
+    border-color: rgba(255,255,255,.1) !important;
+  }
+  .module-tabs button { color: rgba(255,255,255,.45) !important; background: transparent !important }
+  .module-tabs button[style*="var(--navy)"] { background: var(--red) !important; color: #fff !important }
+  .module-tabs button[style*="color: #fff"] { background: var(--red) !important; color: #fff !important }
+
+  /* ── MODAL — headings, text, dividers (any content inside .modal) ─── */
+  .modal h2,.modal h3 { color: #fff !important }
+  .modal p { color: rgba(255,255,255,.55) !important }
+  .modal strong { color: rgba(255,255,255,.9) !important }
+  .modal label { color: rgba(255,255,255,.5) !important }
+  .modal [style*="color: var(--navy)"],.modal [style*="color:var(--navy)"] { color: #fff !important }
+  .modal [style*="color: var(--g400)"],.modal [style*="color:var(--g400)"] { color: rgba(255,255,255,.42) !important }
+  .modal [style*="color: var(--g500)"],.modal [style*="color:var(--g500)"] { color: rgba(255,255,255,.5) !important }
+  .modal [style*="color: var(--g300)"],.modal [style*="color:var(--g300)"] { color: rgba(255,255,255,.3) !important }
+  .modal [style*="background: var(--g50)"],.modal [style*="background:var(--g50)"] {
+    background: rgba(255,255,255,.04) !important; border-color: rgba(255,255,255,.06) !important }
+  .modal [style*="background: var(--g100)"],.modal [style*="background:var(--g100)"] {
+    background: rgba(255,255,255,.07) !important }
+  .modal [style*="background: #fff"],.modal [style*="background:#fff"] {
+    background: rgba(255,255,255,.04) !important; border-color: rgba(255,255,255,.06) !important }
+  .modal button[style*="background: #fff"],.modal button[style*="background:#fff"] {
+    background: rgba(255,255,255,.07) !important; border-color: rgba(255,255,255,.12) !important; color: rgba(255,255,255,.7) !important }
+  .modal [style*="border-bottom: 1px solid var(--g"],.modal [style*="border-top: 1px solid var(--g"] {
+    border-color: rgba(255,255,255,.07) !important }
+  .modal [style*="border: 1px solid var(--g"],.modal [style*="border: 1.5px solid var(--g"] {
+    border-color: rgba(255,255,255,.1) !important }
+
+  /* ── INLINE POSITION:FIXED MODALS (Medico detail/form/delete — inline styles) ─── */
+  div[style*="position: fixed"][style*="inset: 0px"] {
+    background: rgba(5,10,18,.85) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  div[style*="position: fixed"][style*="inset: 0px"] > div {
+    background: #111B29 !important;
+    border-radius: 24px 24px 0 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92dvh !important;
+    overflow-y: auto !important;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+    color: rgba(255,255,255,.85) !important;
+  }
+  div[style*="position: fixed"][style*="inset: 0px"] > div::before {
+    content: '' !important; display: block !important;
+    width: 36px !important; height: 4px !important;
+    background: rgba(255,255,255,.15) !important;
+    border-radius: 2px !important; margin: 12px auto 0 !important;
+  }
+  div[style*="position: fixed"][style*="inset: 0px"] h2 { color: #fff !important }
+  div[style*="position: fixed"][style*="inset: 0px"] p { color: rgba(255,255,255,.55) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] strong { color: #fff !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="color: var(--navy)"] { color: #fff !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="color: var(--g400)"] { color: rgba(255,255,255,.42) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="color: var(--g500)"] { color: rgba(255,255,255,.5) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="color: var(--g300)"] { color: rgba(255,255,255,.3) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="background: var(--g50)"] {
+    background: rgba(255,255,255,.04) !important; border-color: rgba(255,255,255,.06) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="background: var(--g100)"] {
+    background: rgba(255,255,255,.07) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="background: #fff"] {
+    background: rgba(255,255,255,.05) !important; border-color: rgba(255,255,255,.07) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="border-bottom: 1px solid var(--g"] {
+    border-color: rgba(255,255,255,.07) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="border: 1px solid var(--g"] {
+    border-color: rgba(255,255,255,.1) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="border: 1.5px solid var(--g"] {
+    border-color: rgba(255,255,255,.1) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] button[style*="background: #fff"] {
+    background: rgba(255,255,255,.07) !important; border-color: rgba(255,255,255,.14) !important; color: rgba(255,255,255,.7) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="background: var(--navy)"] {
+    background: #060E1C !important }
+  /* Sticky header inside inline modal */
+  div[style*="position: fixed"][style*="inset: 0px"] div[style*="position: sticky"] {
+    background: #111B29 !important; border-color: rgba(255,255,255,.07) !important }
+  /* Zone/Estado picker buttons */
+  div[style*="position: fixed"][style*="inset: 0px"] button[style*="border: 1.5px solid"] {
+    border-color: rgba(255,255,255,.12) !important; background: rgba(255,255,255,.04) !important; color: rgba(255,255,255,.65) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] button[style*="color: var(--red)"] {
+    color: #FF7585 !important; border-color: rgba(200,16,46,.4) !important; background: rgba(200,16,46,.12) !important }
+  div[style*="position: fixed"][style*="inset: 0px"] [style*="background: var(--red-l)"] {
+    background: rgba(200,16,46,.18) !important }
+
+  /* ── TABLE SCROLL WRAP ─── */
+  .table-scroll-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    margin-left: -14px !important;
+    margin-right: -14px !important;
+    padding: 0 !important;
+    min-width: 100% !important;
+  }
+  .table-scroll-wrap::-webkit-scrollbar { display: none !important }
+  .table-scroll-wrap > * { padding-left: 14px; padding-right: 14px; }
+
+  /* ── INLINE WHITE CARDS (s.card pattern in Estadisticas) ─── */
+  .fade-in div[style*="background: #fff"][style*="border: 1px solid var(--g100)"],
+  .fade-in div[style*="background: #fff"][style*="border:1px solid var(--g100)"] {
+    background: #0E1724 !important;
+    border-color: rgba(255,255,255,.07) !important;
+    color: rgba(255,255,255,.85) !important;
+  }
+
+  /* ── GRID COLUMNS → 2-col on mobile ─── */
+  [style*="grid-template-columns: repeat(3, 1fr)"],
+  [style*="grid-template-columns: repeat(4, 1fr)"],
+  [style*="grid-template-columns: repeat(5, 1fr)"],
+  [style*="grid-template-columns: repeat(6, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  /* Single column for very small forms */
+  [style*="grid-template-columns: 1fr 160px"],
+  [style*="grid-template-columns: 1fr 1fr 1fr 1fr"],
+  [style*="grid-template-columns: '1fr 160px"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* ── WHITE BG in .card ─── */
+  .card [style*="background: #fff"] {
+    background: rgba(255,255,255,.04) !important;
+    border-color: rgba(255,255,255,.06) !important;
+  }
+  .card [style*="background: var(--g50)"] {
+    background: rgba(255,255,255,.04) !important;
+    border-color: rgba(255,255,255,.06) !important;
+  }
+  .card [style*="color: var(--navy)"] { color: rgba(255,255,255,.9) !important }
+  .card [style*="color: var(--g400)"] { color: rgba(255,255,255,.42) !important }
+  .card [style*="color: var(--g500)"] { color: rgba(255,255,255,.5) !important }
+  .card [style*="color: var(--g300)"] { color: rgba(255,255,255,.3) !important }
+  .card [style*="border-bottom: 1px solid var(--g"] { border-color: rgba(255,255,255,.06) !important }
+  .card [style*="border: 1px solid var(--g100)"] { border-color: rgba(255,255,255,.08) !important }
+
+  /* ── TOOLBAR → stack on mobile ─── */
+  div[style*="display: flex"][style*="marginBottom: 18px"][style*="gap: 10px"],
+  div[style*="display: flex"][style*="margin-bottom: 18px"][style*="gap: 10px"],
+  div[style*="display: flex"][style*="marginBottom: 18px"][style*="gap: 8px"] {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  div[style*="display: flex"][style*="marginBottom: 18px"] select.input { max-width: 100% !important }
+  div[style*="display: flex"][style*="marginBottom: 18px"] .btn { width: 100% !important; justify-content: center !important }
+  /* Preserve flex rows that shouldn't stack */
+  div[style*="display: flex"][style*="marginBottom: 18px"][style*="flexWrap: wrap"] {
+    flex-direction: row !important;
+  }
+
+  /* ── DAY SELECTOR buttons (Gimnasio) ─── */
+  button[style*="background: #fff"][style*="color: var(--navy)"][style*="border: 1px solid var(--g100)"] {
+    background: rgba(255,255,255,.05) !important;
+    border-color: rgba(255,255,255,.1) !important;
+    color: rgba(255,255,255,.75) !important;
+  }
+  /* Active day (navy bg) — keep */
+  button[style*="background: var(--navy)"][style*="color: #fff"] { color: #fff !important }
+
+  /* ── STATISTICS SCORE HERO padding ─── */
+  div[style*="background: var(--navy)"][style*="border-radius: 16px"],
+  div[style*="background: var(--navy)"][style*="borderRadius: 16px"] {
+    padding: 20px 14px !important;
+  }
+
+  /* ── fit-content tabs (Estadisticas detail) ─── */
+  div[style*="width: fit-content"][style*="background: #fff"],
+  div[style*="width:fit-content"][style*="background: #fff"] {
+    background: rgba(255,255,255,.07) !important;
+    border-color: rgba(255,255,255,.1) !important;
+  }
+
+  /* ── Player selector pill buttons ─── */
+  div[style*="background: var(--g50)"][style*="border-radius: 9px"] {
+    background: rgba(255,255,255,.04) !important;
+  }
+  div[style*="background: var(--g50)"][style*="border-radius: 9px"] button {
+    font-size: 11px !important; padding: 5px 10px !important;
+    background: rgba(255,255,255,.06) !important;
+    border-color: rgba(255,255,255,.12) !important;
+    color: rgba(255,255,255,.65) !important;
+  }
+  div[style*="background: var(--g50)"][style*="border-radius: 9px"] button[style*="var(--red)"] {
+    background: rgba(200,16,46,.15) !important;
+    border-color: rgba(200,16,46,.3) !important;
+    color: #FF7585 !important;
+  }
+
+  /* ── BACK button (detail views) ─── */
+  button[style*="background: transparent"][style*="color: var(--red)"] {
+    color: #FF7585 !important;
+    font-size: 13px !important;
+  }
+
+  /* ── DETAIL HEADER typography ─── */
+  .fade-in h2[style*="font-size: 18px"] { font-size: 16px !important; color: #fff !important }
+  .fade-in p[style*="font-size: 12px"][style*="color: var(--g400)"] { color: rgba(255,255,255,.42) !important }
+
+  /* ── COMUNICACION textarea ─── */
+  .card textarea[style*="background: transparent"] {
+    color: rgba(255,255,255,.85) !important;
+  }
+  .card [style*="border-top: 1px solid var(--g100)"] { border-color: rgba(255,255,255,.07) !important }
+
+  /* ── MEMBER LIST online dot border ─── */
+  div[style*="border: 1.5px solid #fff"] { border-color: #0E1724 !important }
+
+  /* ── NUTRICION weight chart tooltip ─── */
+  .card [style*="background: #fff"][style*="border: 1px solid var(--g100)"][style*="border-radius: 8px"],
+  .card [style*="background: '#fff'"] { background: #1A2744 !important; border-color: rgba(255,255,255,.1) !important }
+
+  /* ── BOTTOM PADDING for content above bottom nav ─── */
+  .page { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important }
+}

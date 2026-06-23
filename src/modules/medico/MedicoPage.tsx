@@ -221,9 +221,10 @@ export default function MedicoPage() {
       : lesiones.length === 0 ? <EmptyState icon="🏥" title="Nessun infortunio registrato" desc={canEdit ? 'Clicca su "+ Registra infortunio"' : 'Nessun infortunio registrato'} />
       : (
         <div className="card">
+          <div className="table-scroll-wrap">
           {/* Header */}
-          <div style={{ display: 'grid', gridTemplateColumns: '180px 160px 110px 110px 120px 130px 140px', gap: 12, padding: '10px 18px', background: 'var(--g50)', borderBottom: '1px solid var(--g100)' }}>
-            {['Jugador','Zona','Lesión','Alta est.','Días lesión','Estado','Acciones'].map((h, i) => (
+          <div style={{ display: 'grid', gridTemplateColumns: '180px 160px 110px 110px 120px 130px 140px', gap: 12, padding: '10px 18px', background: 'var(--g50)', borderBottom: '1px solid var(--g100)', minWidth: 980 }}>
+            {['Giocatore','Zona','Infortunio','Alta prev.','Giorni','Stato','Azioni'].map((h, i) => (
               <div key={i} style={{ fontSize: 11, fontWeight: 700, color: 'var(--g400)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</div>
             ))}
           </div>
@@ -232,7 +233,7 @@ export default function MedicoPage() {
           : filtered.map((l, i) => {
             const es = estadoStyle(l.estado)
             return (
-              <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '180px 160px 110px 110px 120px 130px 140px', gap: 12, padding: '12px 18px', borderBottom: i < filtered.length - 1 ? '1px solid var(--g50)' : 'none', alignItems: 'center', transition: 'background 0.1s' }}
+              <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '180px 160px 110px 110px 120px 130px 140px', gap: 12, padding: '12px 18px', borderBottom: i < filtered.length - 1 ? '1px solid var(--g50)' : 'none', alignItems: 'center', transition: 'background 0.1s', minWidth: 980 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--g50)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}
               >
@@ -271,26 +272,27 @@ export default function MedicoPage() {
               </div>
             )
           })}
+          </div>{/* /table-scroll-wrap */}
         </div>
       )}
 
       {/* ── DETAIL MODAL ── */}
       {modal === 'detail' && active && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,34,24,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 500, padding: 20 }}>
-          <div style={{ background: '#fff', borderRadius: 16, width: '100%', maxWidth: 480, overflow: 'hidden', animation: 'fadeIn 0.15s ease' }}>
+        <div className="overlay" onClick={() => setModal('none')}>
+          <div className="modal" style={{ maxWidth: 480 }} onClick={e => e.stopPropagation()}>
             <div style={{ background: 'var(--navy)', padding: '22px 24px', position: 'relative' }}>
               <button onClick={() => setModal('none')} style={{ position: 'absolute', top: 14, right: 14, width: 28, height: 28, border: 'none', background: 'rgba(255,255,255,0.1)', borderRadius: '50%', color: 'rgba(255,255,255,0.6)', fontSize: 16, cursor: 'pointer' }}>×</button>
               <div style={{ fontSize: 18, fontWeight: 800, color: '#fff' }}>{active.playerName}</div>
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 4 }}>{zonaLabel(active.zona)}</div>
               <div style={{ marginTop: 10 }}><EstadoPill estado={active.estado} /></div>
             </div>
-            <div style={{ padding: '20px 24px' }}>
+            <div className="modal-body">
               {[
                 ['Descrizione', active.descripcion],
-                ['Fecha lesión', active.fechaLesion],
-                ['Alta estimada', active.fechaAltaEstimada ?? '—'],
-                ['Alta real', active.fechaAltaReal ?? '—'],
-                ['Mecanismo', active.mecanismo ?? '—'],
+                ['Data infortunio', active.fechaLesion],
+                ['Alta stimata', active.fechaAltaEstimada ?? '—'],
+                ['Alta reale', active.fechaAltaReal ?? '—'],
+                ['Meccanismo', active.mecanismo ?? '—'],
                 ['Trattamento', active.tratamiento ?? '—'],
               ].map(([l, v], i, arr) => (
                 <div key={l} style={{ padding: '10px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--g50)' : 'none' }}>
@@ -300,12 +302,12 @@ export default function MedicoPage() {
               ))}
               {active.observaciones && (
                 <div style={{ marginTop: 12, padding: '12px 14px', background: 'var(--g50)', borderRadius: 9, borderLeft: '3px solid var(--red)' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--g300)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Observaciones</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--g300)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Osservazioni</div>
                   <div style={{ fontSize: 13, color: 'var(--g500)', lineHeight: 1.55 }}>{active.observaciones}</div>
                 </div>
               )}
               {canEdit && (
-                <button onClick={() => { setModal('none'); setTimeout(() => openEdit(active!), 80) }} style={{ width: '100%', marginTop: 16, padding: 12, border: 'none', borderRadius: 10, background: 'var(--red)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                <button onClick={() => { setModal('none'); setTimeout(() => openEdit(active!), 80) }} className="btn btn-red" style={{ width: '100%', marginTop: 16 }}>
                   Modifica infortunio
                 </button>
               )}
@@ -316,16 +318,16 @@ export default function MedicoPage() {
 
       {/* ── FORM MODAL ── */}
       {modal === 'form' && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,34,24,0.55)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 500, padding: 20, overflowY: 'auto' }}>
-          <div style={{ background: '#fff', borderRadius: 16, width: '100%', maxWidth: 580, animation: 'fadeIn 0.15s ease', marginTop: 20, marginBottom: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 28px 16px', borderBottom: '1px solid var(--g100)', position: 'sticky', top: 0, background: '#fff', zIndex: 1, borderRadius: '16px 16px 0 0' }}>
+        <div className="overlay" onClick={() => setModal('none')}>
+          <div className="modal" style={{ maxWidth: 580 }} onClick={e => e.stopPropagation()}>
+            <div className="modal-hdr" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
               <div>
                 <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: 'var(--navy)' }}>{active ? 'Modifica infortunio' : 'Registra infortunio'}</h2>
                 <p style={{ margin: '3px 0 0', fontSize: 12, color: 'var(--g400)' }}>Completa i dati dell'infortunio</p>
               </div>
-              <button onClick={() => setModal('none')} style={{ width: 32, height: 32, border: 'none', background: 'var(--g100)', borderRadius: '50%', fontSize: 18, color: 'var(--g400)', cursor: 'pointer' }}>×</button>
+              <button onClick={() => setModal('none')} className="modal-x">×</button>
             </div>
-            <div style={{ padding: '22px 28px 28px' }}>
+            <div className="modal-body">
 
               {/* Jugador */}
               <div style={{ marginBottom: 16 }}>
@@ -395,8 +397,8 @@ export default function MedicoPage() {
               </div>
 
               <div style={{ display: 'flex', gap: 10, paddingTop: 12, borderTop: '1px solid var(--g100)' }}>
-                <button onClick={() => setModal('none')} style={{ flex: 1, padding: 12, border: '1px solid var(--g100)', borderRadius: 10, background: '#fff', color: 'var(--g500)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Annulla</button>
-                <button onClick={handleSave} disabled={saving} style={{ flex: 2, padding: 12, border: 'none', borderRadius: 10, background: saving ? '#C5D5C9' : 'var(--red)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                <button onClick={() => setModal('none')} className="btn btn-ghost" style={{ flex: 1 }}>Annulla</button>
+                <button onClick={handleSave} disabled={saving} className="btn btn-red" style={{ flex: 2, opacity: saving ? 0.6 : 1 }}>
                   {saving ? 'Salvataggio...' : active ? 'Salva modifiche' : 'Registra infortunio'}
                 </button>
               </div>
@@ -407,16 +409,16 @@ export default function MedicoPage() {
 
       {/* ── DELETE MODAL ── */}
       {modal === 'delete' && active && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,34,24,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 500 }}>
-          <div style={{ background: '#fff', borderRadius: 16, padding: '32px', width: '100%', maxWidth: 380 }}>
-            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+        <div className="overlay" onClick={() => setModal('none')}>
+          <div className="modal" style={{ maxWidth: 380 }} onClick={e => e.stopPropagation()}>
+            <div style={{ padding: '32px 26px', textAlign: 'center' }}>
               <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--red-l)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 24 }}>🗑</div>
-              <h2 style={{ margin: '0 0 8px', fontSize: 17, fontWeight: 800, color: 'var(--navy)' }}>Elimina infortunio</h2>
-              <p style={{ margin: 0, fontSize: 13, color: 'var(--g400)', lineHeight: 1.6 }}>Eliminare l\'infortunio di <strong style={{ color: 'var(--navy)' }}>{active.playerName}</strong>?</p>
-            </div>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => setModal('none')} style={{ flex: 1, padding: 12, border: '1px solid var(--g100)', borderRadius: 10, background: '#fff', color: 'var(--g500)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Annulla</button>
-              <button onClick={handleDelete} disabled={saving} style={{ flex: 1, padding: 12, border: 'none', borderRadius: 10, background: 'var(--red)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{saving ? 'Eliminazione...' : 'Sì, elimina'}</button>
+              <h2 style={{ margin: '0 0 8px', fontSize: 17, fontWeight: 800 }}>Elimina infortunio</h2>
+              <p style={{ margin: '0 0 20px', fontSize: 13, lineHeight: 1.6 }}>Eliminare l'infortunio di <strong>{active.playerName}</strong>?</p>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button onClick={() => setModal('none')} className="btn btn-ghost" style={{ flex: 1 }}>Annulla</button>
+                <button onClick={handleDelete} disabled={saving} className="btn btn-red" style={{ flex: 1, opacity: saving ? 0.6 : 1 }}>{saving ? 'Eliminazione...' : 'Sì, elimina'}</button>
+              </div>
             </div>
           </div>
         </div>

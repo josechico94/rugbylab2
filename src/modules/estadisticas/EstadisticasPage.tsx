@@ -183,7 +183,7 @@ export default function EstadisticasPage() {
     {stat:'Touche',value:pct(active.teamStats.lineoutGanados,active.teamStats.lineoutTotales)},
   ]:[]
 
-  const s={card:{background:'#fff',border:'1px solid var(--g100)',borderRadius:12,overflow:'hidden'} as React.CSSProperties}
+  const s={card:{borderRadius:12,overflow:'hidden'} as React.CSSProperties}
 
   return (
     <div className="fade-in" style={{padding: isMobile ? "14px 14px 0" : undefined}}>
@@ -206,12 +206,13 @@ export default function EstadisticasPage() {
         {loading?<div style={{textAlign:'center',padding:40,color:'var(--g300)'}}>Caricamento...</div>
         :matches.length===0?<EmptyState icon="📊" title="Nessuna partita registrata" desc={canEdit?'Clicca su "+ Registra partita"':'Non ci sono ancora partite caricate'}/>
         :<div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 300px",gap:20}}>
-          <div style={s.card}>
-            <div style={{display:'grid',gridTemplateColumns:'90px 1fr 140px 80px 130px 120px',gap:12,padding:'10px 18px',background:'var(--g50)',borderBottom:'1px solid var(--g100)'}}>
+          <div className="card" style={s.card}>
+            <div className="table-scroll-wrap">
+            <div style={{display:'grid',gridTemplateColumns:'90px 1fr 140px 80px 130px 120px',gap:12,padding:'10px 18px',background:'var(--g50)',borderBottom:'1px solid var(--g100)',minWidth:660}}>
               {['Data','Avversario','Competizione','Campo','Risultato',''].map((h,i)=><div key={i} style={{fontSize:11,fontWeight:700,color:'var(--g400)',textTransform:'uppercase',letterSpacing:'0.04em'}}>{h}</div>)}
             </div>
             {matches.map((m,i)=>(
-              <div key={m.id} style={{display:'grid',gridTemplateColumns:'90px 1fr 140px 80px 130px 120px',gap:12,padding:'12px 18px',borderBottom:i<matches.length-1?'1px solid var(--g50)':'none',alignItems:'center',transition:'background 0.1s'}}
+              <div key={m.id} style={{display:'grid',gridTemplateColumns:'90px 1fr 140px 80px 130px 120px',gap:12,padding:'12px 18px',borderBottom:i<matches.length-1?'1px solid var(--g50)':'none',alignItems:'center',transition:'background 0.1s',minWidth:660}}
                 onMouseEnter={e=>(e.currentTarget.style.background='var(--g50)')} onMouseLeave={e=>(e.currentTarget.style.background='')}>
                 <div style={{fontSize:12,color:'var(--g400)'}}>{new Date(m.fecha).toLocaleDateString('es-AR',{day:'2-digit',month:'short'})}</div>
                 <div>
@@ -235,12 +236,13 @@ export default function EstadisticasPage() {
                 </div>
               </div>
             ))}
+            </div>{/* /table-scroll-wrap */}
           </div>
 
           <div style={{display:'flex',flexDirection:'column',gap:16}}>
             {evoData.length>1&&<div>
               <div style={{fontSize:13,fontWeight:700,color:'var(--navy)',marginBottom:10}}>Andamento punti</div>
-              <div style={{background:'#fff',border:'1px solid var(--g100)',borderRadius:12,padding:'14px 16px'}}>
+              <div className="card" style={{padding:'14px 16px'}}>
                 <ResponsiveContainer width="100%" height={150}>
                   <LineChart data={evoData}>
                     <XAxis dataKey="fecha" tick={{fontSize:10,fill:'var(--g400)'}} axisLine={false} tickLine={false}/>
@@ -254,7 +256,7 @@ export default function EstadisticasPage() {
             </div>}
             {topScorers.length>0&&<div>
               <div style={{fontSize:13,fontWeight:700,color:'var(--navy)',marginBottom:10}}>Top tries — acumulado</div>
-              <div style={s.card}>
+              <div className="card" style={s.card}>
                 {topScorers.map((p,i)=>(
                   <div key={p.name} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 16px',borderBottom:i<topScorers.length-1?'1px solid var(--g50)':'none'}}>
                     <div style={{width:22,height:22,borderRadius:'50%',background:i===0?'#E8A020':'var(--g50)',color:i===0?'#fff':'var(--red)',fontSize:11,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center'}}>{i+1}</div>
@@ -305,11 +307,11 @@ export default function EstadisticasPage() {
 
         {dTab==='equipo'&&<div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14}}>
           {[
-            {title:'⚔️ Resultado',items:[['Punti fatti',active.teamStats.puntosAFavor,''],['Punti subiti',active.teamStats.puntoEnContra,''],['Mete fatte',active.teamStats.triesAFavor,''],['Mete subite',active.teamStats.triesEnContra,'']]},
-            {title:'⚡ Posesión y ataque',items:[['Possesso',active.teamStats.posesionPct,'%'],['Territorio',active.teamStats.territorioPct,'%'],['Metri totali',active.teamStats.metrosTotales,'m'],['Passaggi totali',active.teamStats.pasesTotales,'']]},
+            {title:'⚔️ Risultato',items:[['Punti fatti',active.teamStats.puntosAFavor,''],['Punti subiti',active.teamStats.puntoEnContra,''],['Mete fatte',active.teamStats.triesAFavor,''],['Mete subite',active.teamStats.triesEnContra,'']]},
+            {title:'⚡ Possesso e attacco',items:[['Possesso',active.teamStats.posesionPct,'%'],['Territorio',active.teamStats.territorioPct,'%'],['Metri totali',active.teamStats.metrosTotales,'m'],['Passaggi totali',active.teamStats.pasesTotales,'']]},
             {title:'📐 Set piece',items:[['Mischie vinte',`${active.teamStats.scrumGanados}/${active.teamStats.scrumTotales}`,''],['Touche vinte',`${active.teamStats.lineoutGanados}/${active.teamStats.lineoutTotales}`,''],['Efficacia placcaggi',active.teamStats.tacklesPct,'%'],['Falli commessi',active.teamStats.penalesCometidos,'']]},
           ].map(sec=>(
-            <div key={sec.title} style={s.card}>
+            <div key={sec.title} className="card" style={s.card}>
               <div style={{padding:'12px 16px',borderBottom:'1px solid var(--g100)',fontSize:13,fontWeight:700}}>{sec.title}</div>
               {sec.items.map(([l,v,u])=>(
                 <div key={String(l)} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'11px 16px',borderBottom:'1px solid var(--g50)'}}>
@@ -321,7 +323,7 @@ export default function EstadisticasPage() {
           ))}
         </div>}
 
-        {dTab==='jugadores'&&<div style={s.card}><div style={{overflowX:'auto'}}>
+        {dTab==='jugadores'&&<div className="card" style={s.card}><div style={{overflowX:'auto'}}>
           <table style={{width:'100%',borderCollapse:'collapse',fontSize:12}}>
             <thead>
               <tr style={{background:'var(--g50)'}}>
@@ -351,7 +353,7 @@ export default function EstadisticasPage() {
         </div></div>}
 
         {dTab==='radar'&&<div className="grid-auto">
-          <div style={{...s.card,padding:'16px 18px'}}>
+          <div className="card" style={{...s.card,padding:'16px 18px'}}>
             <div style={{fontSize:13,fontWeight:700,color:'var(--navy)',marginBottom:16}}>Radar della partita</div>
             <ResponsiveContainer width="100%" height={260}>
               <RadarChart data={radarData}>
@@ -361,7 +363,7 @@ export default function EstadisticasPage() {
               </RadarChart>
             </ResponsiveContainer>
           </div>
-          <div style={{...s.card,padding:'16px 18px'}}>
+          <div className="card" style={{...s.card,padding:'16px 18px'}}>
             <div style={{fontSize:13,fontWeight:700,color:'var(--navy)',marginBottom:16}}>Top performer</div>
             {[
               {label:'Più mete',player:[...active.playerStats].sort((a,b)=>b.tries-a.tries)[0],stat:(p: PlayerMatchStats)=>`${p.tries} tries`},
@@ -391,7 +393,7 @@ export default function EstadisticasPage() {
         </div>
 
         {/* Info básica */}
-        <div style={{...s.card,padding:'20px 22px',marginBottom:16,overflow:'visible'}}>
+        <div className="card" style={{...s.card,padding:'20px 22px',marginBottom:16,overflow:'visible'}}>
           <div style={{fontSize:13,fontWeight:700,color:'var(--navy)',marginBottom:14}}>📋 Informazioni sulla partita</div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 160px 160px 220px',gap:14}}>
             <div><Label>Avversario *</Label><input className="input" placeholder="Es: Rugby Parma" value={fRival} onChange={e=>setFRival(e.target.value)}/></div>
@@ -402,7 +404,7 @@ export default function EstadisticasPage() {
         </div>
 
         {/* Team stats */}
-        <div style={{...s.card,padding:'20px 22px',marginBottom:16,overflow:'visible'}}>
+        <div className="card" style={{...s.card,padding:'20px 22px',marginBottom:16,overflow:'visible'}}>
           <div style={{fontSize:13,fontWeight:700,color:'var(--navy)',marginBottom:14}}>📊 Statistiche della squadra</div>
           <div className="stats-grid" style={{marginBottom:14}}>
             <Num label="Punti fatti"  value={fTeam.puntosAFavor}  onChange={v=>setFTeam(t=>({...t,puntosAFavor:v}))}/>
@@ -428,7 +430,7 @@ export default function EstadisticasPage() {
         </div>
 
         {/* Player stats */}
-        <div style={{...s.card,padding:'20px 22px',overflow:'visible'}}>
+        <div className="card" style={{...s.card,padding:'20px 22px',overflow:'visible'}}>
           <div style={{fontSize:13,fontWeight:700,color:'var(--navy)',marginBottom:12}}>👤 Stats per giocatore ({fPlayers.length} selezionati)</div>
           <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:16,padding:'12px 14px',background:'var(--g50)',borderRadius:9}}>
             {players.map(p=>{
