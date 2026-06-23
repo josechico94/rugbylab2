@@ -1,0 +1,7 @@
+Para completar la PWA, generá los iconos con este SVG:
+- public/icon.svg (incluido)
+- public/icon-192.png (192x192)  
+- public/icon-512.png (512x512)
+
+Podés convertir el SVG a PNG en: https://svgtopng.com
+O usar cualquier imagen 192x192 y 512x512 del club.

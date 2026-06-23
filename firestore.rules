@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuth() { return request.auth != null; }
+    function getRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    function isAdmin() {
+      return isAuth() && (getRole() == 'admin' || getRole() == 'super_admin');
+    }
+    function isTecnico() {
+      return isAuth() && (getRole() == 'admin' || getRole() == 'super_admin' || getRole() == 'cuerpo_tecnico');
+    }
+
+    match /users/{uid} {
+      allow read:   if isAuth();
+      allow create: if request.auth.uid == uid;
+      allow update: if isAuth() && (request.auth.uid == uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Pizarra táctica — boardpro uses its own auth
+    match /plays/{id} {
+      allow read:  if true;
+      allow write: if true;
+    }
+    match /plays_cloud/{id} {
+      allow read:  if true;
+      allow write: if true;
+    }
+
+    match /{collection}/{id} {
+      allow read:  if isAuth();
+      allow write: if isTecnico();
+    }
+  }
+}

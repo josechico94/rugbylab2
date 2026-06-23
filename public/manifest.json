@@ -1,0 +1,20 @@
+{
+  "name": "RugbyLab",
+  "short_name": "RugbyLab",
+  "description": "Sistema integral Bologna Rugby Club",
+  "theme_color": "#0A1628",
+  "background_color": "#0A1628",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "start_url": "/",
+  "categories": ["sports", "productivity"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Plantel", "url": "/plantel", "description": "Ver plantel" },
+    { "name": "Calendario", "url": "/calendario", "description": "Ver agenda" }
+  ]
+}
