@@ -191,62 +191,80 @@ function isNameToken(t: string): boolean {
 export function parsePresenze(pages: string[][]): PresenzeRow[] {
   const tokens = pages.flat()
   const rows: PresenzeRow[] = []
-
-  // Skip header row
-  let i = 0
-  while (i < tokens.length && !tokens[i].toUpperCase().includes('COGNOME')) i++
-  // skip header tokens: COGNOME NOME % P I C M A TOT FASCIA
-  while (i < tokens.length && ['COGNOME','NOME','%','P','I','C','M','A','TOT','FASCIA'].includes(tokens[i].toUpperCase())) i++
-
   const FASCIA_LABELS = ['OTTIMO', 'BUONO', 'SCARSO', 'PESSIMO']
+  // Words to ignore (header, fascia descriptions, legend noise)
+  const IGNORE = new Set(['COGNOME','NOME','%','P','I','C','M','A','TOT','FASCIA',
+    'OTTIMO','BUONO','SCARSO','PESSIMO','<'])
 
-  while (i < tokens.length) {
-    // row number (optional)
-    if (/^\d{1,2}$/.test(tokens[i]) && !tokens[i+1]?.includes('%')) { i++; continue }
-
-    // Name (2-3 uppercase tokens)
-    const nameParts: string[] = []
-    while (i < tokens.length && isNameToken(tokens[i])) {
-      nameParts.push(tokens[i]); i++
+  // Strategy: find every token that looks like a percentage value (e.g. "96,7%" or "96,7" followed by "%")
+  // and use it to anchor each player row.
+  // Build a normalized token list: merge "96,7" + "%" → "96,7%"
+  const toks: string[] = []
+  for (let j = 0; j < tokens.length; j++) {
+    const t = tokens[j]
+    if (tokens[j+1] === '%' && /^\d+[,.]?\d*$/.test(t)) {
+      toks.push(t + '%')
+      j++ // skip the '%'
+    } else {
+      toks.push(t)
     }
-    if (nameParts.length === 0) { i++; continue }
+  }
+
+  // Find indices of percentage tokens
+  const pctIndices: number[] = []
+  for (let j = 0; j < toks.length; j++) {
+    if (/^\d{1,3}[,.]\d+%$/.test(toks[j])) pctIndices.push(j)
+  }
+
+  for (const pi of pctIndices) {
+    // Name is immediately before the % token (skip row number if present)
+    const nameParts: string[] = []
+    let j = pi - 1
+    // Collect name tokens going backwards until we hit a non-name token
+    while (j >= 0 && isNameToken(toks[j]) && !IGNORE.has(toks[j].toUpperCase())) {
+      nameParts.unshift(toks[j])
+      j--
+    }
+    if (nameParts.length === 0) continue
     const name = nameParts.join(' ')
 
-    // %, then P I C M A TOT
-    // % token looks like "96,7%"
-    const pctStr = tokens[i] ?? ''
-    if (!pctStr.includes('%')) continue
-    const pct = parseFloat(pctStr.replace(',', '.').replace('%', ''))
-    i++
+    // Parse the % value
+    const pct = parseFloat(toks[pi].replace(',', '.').replace('%', ''))
 
+    // After % token, collect up to 6 numbers (dashes → 0, skip FASCIA noise)
     const nums: number[] = []
-    while (i < tokens.length && nums.length < 6) {
-      const t = tokens[i]
-      if (/^\d+$/.test(t)) { nums.push(parseInt(t)); i++ }
-      else if (t === '-') { nums.push(0); i++ }
-      else break
+    let k = pi + 1
+    while (k < toks.length && nums.length < 6) {
+      const t = toks[k]
+      if (/^\d+$/.test(t)) { nums.push(parseInt(t)); k++ }
+      else if (t === '-') { nums.push(0); k++ }
+      else if (IGNORE.has(t.toUpperCase()) || /^\d{1,3}[,.]\d+%$/.test(t)) break
+      else k++ // skip noise tokens
     }
+
+    // Handle empty cells: C and M columns are often empty (no token)
+    // If only 4 nums, C and M are both missing → insert zeros at positions 2,3
+    // If 5 nums, one of C or M is missing → insert at position 2
+    if (nums.length === 4) nums.splice(2, 0, 0, 0)
+    else if (nums.length === 5) nums.splice(2, 0, 0)
+
     if (nums.length < 6) continue
 
-    // Optional FASCIA label (might appear inline or as separate column)
+    // FASCIA: look for it right after the 6 numbers in the token stream
     let fascia: PresenzeRow['fascia'] = ''
-    if (i < tokens.length && FASCIA_LABELS.includes(tokens[i]?.toUpperCase())) {
-      fascia = tokens[i].toUpperCase() as PresenzeRow['fascia']
-      i++
+    if (k < toks.length && FASCIA_LABELS.includes(toks[k]?.toUpperCase())) {
+      fascia = toks[k].toUpperCase() as PresenzeRow['fascia']
     }
-
-    // Skip extended fascia descriptions like "85 - 100 %"
-    while (i < tokens.length && (tokens[i] === '-' || /^\d+$/.test(tokens[i]) || tokens[i] === '%')) i++
 
     rows.push({
       name,
       pct,
-      presenti: nums[0],
+      presenti:  nums[0],
       infortuni: nums[1],
       convocato: nums[2],
-      malattia: nums[3],
-      assenti: nums[4],
-      tot: nums[5],
+      malattia:  nums[3],
+      assenti:   nums[4],
+      tot:       nums[5],
       fascia,
     })
   }
