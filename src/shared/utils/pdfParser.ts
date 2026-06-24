@@ -145,7 +145,7 @@ export function parseMinutaggi(pages: string[][]): MinutaggiRow[] {
     if (nameParts.length === 0) { i++; continue }
     const name = nameParts.join(' ')
 
-    // Next 6 values (some may be '-')
+    // Next up to 6 values (some may be '-', empty cells produce no token)
     const nums: number[] = []
     while (i < tokens.length && nums.length < 6) {
       const t = tokens[i].replace(',', '.')
@@ -153,6 +153,14 @@ export function parseMinutaggi(pages: string[][]): MinutaggiRow[] {
       else if (/^\d+$/.test(t)) { nums.push(parseInt(t)); i++ }
       else break
     }
+
+    // If only 5 values, one column was an empty cell (most often "non convocato" at index 3).
+    // Detect: last value is always minuti (large), second-to-last is presenze totali.
+    // Insert 0 at index 3 when we have 5 values.
+    if (nums.length === 5) {
+      nums.splice(3, 0, 0)
+    }
+
     if (nums.length === 6) {
       rows.push({
         name,
