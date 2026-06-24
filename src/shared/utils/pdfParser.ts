@@ -91,22 +91,33 @@ export interface StatsIndividuali {
   }[]
 }
 
+export interface PdfItem { str: string; x: number; y: number }
+
 // ─────────────────────────────────────────────────────────────────
-// Extract all text items from a PDF file
+// Extract all text items from a PDF file (with position info)
 // ─────────────────────────────────────────────────────────────────
-export async function extractPdfText(file: File): Promise<string[][]> {
+export async function extractPdfPages(file: File): Promise<PdfItem[][]> {
   const buffer = await file.arrayBuffer()
   const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
-  const pages: string[][] = []
+  const pages: PdfItem[][] = []
   for (let p = 1; p <= pdf.numPages; p++) {
     const page = await pdf.getPage(p)
     const content = await page.getTextContent()
     const items = content.items
-      .map((i: any) => (i.str as string).trim())
-      .filter(s => s.length > 0)
+      .filter((i: any) => (i.str as string).trim().length > 0)
+      .map((i: any) => ({
+        str: (i.str as string).trim(),
+        x: i.transform[4] as number,
+        y: i.transform[5] as number,
+      }))
     pages.push(items)
   }
   return pages
+}
+
+export async function extractPdfText(file: File): Promise<string[][]> {
+  const pages = await extractPdfPages(file)
+  return pages.map(p => p.map(i => i.str))
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -335,60 +346,61 @@ function extractNth(text: string, keyword: string, nth: number): number {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Parse STATISTICHE INDIVIDUALI PDF (GPS + Technical)
+// Reconstruct vertical player-name columns from positioned items
+// In SI PDFs each surname is written vertically above the data rows.
+// pdfjs emits each letter as a separate item; letters in the same
+// column share the same x-coordinate (±tolerance).
 // ─────────────────────────────────────────────────────────────────
-export function parseStatsIndividuali(pages: string[][]): StatsIndividuali {
-  const tokens = pages.flat()
-  const text = tokens.join(' ')
+function reconstructColumnNames(items: PdfItem[], belowY: number): { x: number; name: string }[] {
+  // Only single uppercase letters in the header zone (above data rows)
+  const letters = items.filter(i => i.y > belowY && /^[A-ZÀÈÌÒÙÁÉÍÓÚ]$/.test(i.str))
 
-  // Match title
-  const titleMatch = text.match(/BOLOGNA[^V]*VS[^(]+\(([^)]+)\)/i)
-  const matchTitle = titleMatch ? titleMatch[0] : ''
-
-  // Extract player codes from header row (uppercase 2-8 char codes that appear before MINUTI)
-  // The header has codes like: AVERAGE B BIONDI BOSCHETTI DENIS FATTORI GAMBA GIOVA ...
-  const minutiIdx = tokens.findIndex(t => t.toUpperCase() === 'MINUTI')
-  // Player codes are the tokens between the title info and MINUTI row
-  // They start after the match/club name tokens and before MINUTI
-
-  // Strategy: find the MINUTI row, then read each row as: label weight? val1 val2 ...
-  // The number of columns = number of players + 1 (AVERAGE column)
-
-  // Find row indices for key stats
-  const rows = parseIndividualiRows(tokens)
-
-  return { matchTitle, players: rows }
-}
-
-function parseIndividualiRows(tokens: string[]): StatsIndividuali['players'] {
-  // Find column header codes - they appear as single uppercase abbreviations
-  // before the MINUTI row
-  const minutiIdx = tokens.findIndex(t => t.toUpperCase() === 'MINUTI')
-  if (minutiIdx < 0) return []
-
-  // Collect column codes: go backwards from MINUTI, picking short uppercase tokens
-  const codes: string[] = []
-  // The codes appear just before MINUTI in the PDF text flow
-  // Scan for them: they're all-caps, 1-12 chars, appear in a sequence
-  let ci = minutiIdx - 1
-  while (ci >= 0 && codes.length < 25) {
-    const t = tokens[ci]
-    if (/^[A-Z0-9_'àèìòùÀÈÌÒÙ]{1,12}$/.test(t) && t !== 'MINUTI') {
-      codes.unshift(t)
-      ci--
+  // Group by x with tolerance ±8 units
+  const cols: { centerX: number; letters: { str: string; y: number }[] }[] = []
+  for (const item of letters) {
+    const existing = cols.find(c => Math.abs(c.centerX - item.x) <= 8)
+    if (existing) {
+      existing.letters.push({ str: item.str, y: item.y })
     } else {
-      break
+      cols.push({ centerX: item.x, letters: [{ str: item.str, y: item.y }] })
     }
   }
 
-  // Remove "AVERAGE" column (first one)
-  const playerCodes = codes.filter(c => c !== 'AVERAGE' && c !== 'MEDIA')
+  // Sort each column top-to-bottom (higher y = higher on page in PDF coords)
+  return cols
+    .map(c => ({
+      x: c.centerX,
+      name: c.letters.sort((a, b) => b.y - a.y).map(l => l.str).join(''),
+    }))
+    .sort((a, b) => a.x - b.x)
+}
 
-  // Now read the MINUTI row values
-  const minutiValues = readRowValues(tokens, minutiIdx, playerCodes.length + 1)
-  const minutiPlayer = minutiValues.slice(1) // skip AVERAGE
+// ─────────────────────────────────────────────────────────────────
+// Parse STATISTICHE INDIVIDUALI PDF (GPS + Technical)
+// ─────────────────────────────────────────────────────────────────
+export function parseStatsIndividuali(posPages: PdfItem[][]): StatsIndividuali {
+  const tokens = posPages.flat().map(i => i.str)
+  const text = tokens.join(' ')
 
-  // Find other key rows
+  const titleMatch = text.match(/BOLOGNA[^V]*VS[^(]+\(([^)]+)\)/i)
+  const matchTitle = titleMatch ? titleMatch[0] : ''
+
+  const minutiIdx = tokens.findIndex(t => t.toUpperCase() === 'MINUTI')
+  if (minutiIdx < 0) return { matchTitle, players: [] }
+
+  // Find the y-coordinate of the MINUTI label to bound the header zone
+  const page1 = posPages[0] ?? []
+  const minutiItem = page1.find(i => i.str.toUpperCase() === 'MINUTI')
+  const minutiY = minutiItem ? minutiItem.y : 0
+
+  // Reconstruct player names from vertically-written letters
+  const allCols = reconstructColumnNames(page1, minutiY)
+  const playerCols = allCols.filter(c => c.name !== 'AVERAGE' && c.name !== 'MEDIA')
+  const playerNames = playerCols.map(c => c.name)
+  const n = playerNames.length
+
+  const minutiValues  = readRowValues(tokens, minutiIdx, n + 1).slice(1)
+
   const wrPesatoIdx   = findRowIdx(tokens, 'WR PESATO', minutiIdx)
   const workRateIdx   = findRowIdx(tokens, 'WORK RATE', minutiIdx)
   const gpsVolIdx     = findRowIdx(tokens, 'VOLUME', minutiIdx)
@@ -401,36 +413,39 @@ function parseIndividualiRows(tokens: string[]): StatsIndividuali['players'] {
   const tackIneffIdx  = findRowIdx2(tokens, 'INEFFICACE', 'TACKLE', minutiIdx)
   const cleanOutIdx   = findRowIdx2(tokens, 'CLEAN OUT', '1°', minutiIdx)
 
-  const wrPesato       = wrPesatoIdx  >= 0 ? readRowValues(tokens, wrPesatoIdx,  playerCodes.length+1).slice(1) : []
-  const workRate       = workRateIdx  >= 0 ? readRowPctValues(tokens, workRateIdx, playerCodes.length+1).slice(1) : []
-  const gpsVol         = gpsVolIdx    >= 0 ? readRowValues(tokens, gpsVolIdx,     playerCodes.length+1).slice(1) : []
-  const gpsPerf        = gpsPerfIdx   >= 0 ? readRowPctValues(tokens, gpsPerfIdx, playerCodes.length+1).slice(1) : []
-  const gestEff        = gestEffIdx   >= 0 ? readRowValues(tokens, gestEffIdx,    playerCodes.length+1).slice(1) : []
-  const gestNE         = gestNEIdx    >= 0 ? readRowValues(tokens, gestNEIdx,     playerCodes.length+1).slice(1) : []
-  const bcAv           = bcAvIdx      >= 0 ? readRowValues(tokens, bcAvIdx,       playerCodes.length+1).slice(1) : []
-  const tackDom        = tackDomIdx   >= 0 ? readRowValues(tokens, tackDomIdx,    playerCodes.length+1).slice(1) : []
-  const tackNeut       = tackNeutIdx  >= 0 ? readRowValues(tokens, tackNeutIdx,   playerCodes.length+1).slice(1) : []
-  const tackIneff      = tackIneffIdx >= 0 ? readRowValues(tokens, tackIneffIdx,  playerCodes.length+1).slice(1) : []
-  const cleanOut       = cleanOutIdx  >= 0 ? readRowValues(tokens, cleanOutIdx,   playerCodes.length+1).slice(1) : []
+  const wrPesato   = wrPesatoIdx  >= 0 ? readRowValues(tokens, wrPesatoIdx,  n+1).slice(1) : []
+  const workRate   = workRateIdx  >= 0 ? readRowPctValues(tokens, workRateIdx, n+1).slice(1) : []
+  const gpsVol     = gpsVolIdx    >= 0 ? readRowValues(tokens, gpsVolIdx,     n+1).slice(1) : []
+  const gpsPerf    = gpsPerfIdx   >= 0 ? readRowPctValues(tokens, gpsPerfIdx, n+1).slice(1) : []
+  const gestEff    = gestEffIdx   >= 0 ? readRowValues(tokens, gestEffIdx,    n+1).slice(1) : []
+  const gestNE     = gestNEIdx    >= 0 ? readRowValues(tokens, gestNEIdx,     n+1).slice(1) : []
+  const bcAv       = bcAvIdx      >= 0 ? readRowValues(tokens, bcAvIdx,       n+1).slice(1) : []
+  const tackDom    = tackDomIdx   >= 0 ? readRowValues(tokens, tackDomIdx,    n+1).slice(1) : []
+  const tackNeut   = tackNeutIdx  >= 0 ? readRowValues(tokens, tackNeutIdx,   n+1).slice(1) : []
+  const tackIneff  = tackIneffIdx >= 0 ? readRowValues(tokens, tackIneffIdx,  n+1).slice(1) : []
+  const cleanOut   = cleanOutIdx  >= 0 ? readRowValues(tokens, cleanOutIdx,   n+1).slice(1) : []
 
-  return playerCodes.map((code, idx) => ({
-    code,
-    name: code,
-    minuti: minutiPlayer[idx] ?? 0,
-    wrPesato: wrPesato[idx] ?? 0,
-    workRatePct: workRate[idx] ?? 0,
-    gestEfficaci: gestEff[idx] ?? 0,
-    gestNonEfficaci: gestNE[idx] ?? 0,
-    workEfficacyPct: 0,
-    gpsVolume: gpsVol[idx] ?? 0,
-    gpsPerformance: 0,
-    gpsPerformancePct: gpsPerf[idx] ?? 0,
-    ballCarrierAvanzante: bcAv[idx] ?? 0,
-    tackleDominante: tackDom[idx] ?? 0,
-    tackleNeutro: tackNeut[idx] ?? 0,
-    tackleIneffice: tackIneff[idx] ?? 0,
-    cleanOut: cleanOut[idx] ?? 0,
-  }))
+  return {
+    matchTitle,
+    players: playerNames.map((name, idx) => ({
+      code: name,
+      name,
+      minuti: minutiValues[idx] ?? 0,
+      wrPesato: wrPesato[idx] ?? 0,
+      workRatePct: workRate[idx] ?? 0,
+      gestEfficaci: gestEff[idx] ?? 0,
+      gestNonEfficaci: gestNE[idx] ?? 0,
+      workEfficacyPct: 0,
+      gpsVolume: gpsVol[idx] ?? 0,
+      gpsPerformance: 0,
+      gpsPerformancePct: gpsPerf[idx] ?? 0,
+      ballCarrierAvanzante: bcAv[idx] ?? 0,
+      tackleDominante: tackDom[idx] ?? 0,
+      tackleNeutro: tackNeut[idx] ?? 0,
+      tackleIneffice: tackIneff[idx] ?? 0,
+      cleanOut: cleanOut[idx] ?? 0,
+    })),
+  }
 }
 
 function findRowIdx(tokens: string[], keyword: string, after: number): number {

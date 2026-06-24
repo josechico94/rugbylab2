@@ -1,7 +1,7 @@
 // src/modules/estadisticas/PdfImportModal.tsx
 import { useState, useRef } from 'react'
 import {
-  extractPdfText, detectPdfType,
+  extractPdfPages, detectPdfType,
   parseMinutaggi, parsePresenze, parseStatsGenerali, parseStatsIndividuali,
   type PdfType, type MinutaggiRow, type PresenzeRow, type StatsGenerali, type StatsIndividuali,
 } from '@/shared/utils/pdfParser'
@@ -35,7 +35,8 @@ export default function PdfImportModal({ onClose, onImportMinutaggi, onImportPre
     setError('')
     setFileName(file.name)
     try {
-      const pages = await extractPdfText(file)
+      const posPages = await extractPdfPages(file)
+      const pages = posPages.map(p => p.map(i => i.str))
       const type = detectPdfType(pages)
       setPdfType(type)
 
@@ -46,7 +47,7 @@ export default function PdfImportModal({ onClose, onImportMinutaggi, onImportPre
       } else if (type === 'stats_generali') {
         setStatsGen(parseStatsGenerali(pages))
       } else if (type === 'stats_individuali') {
-        setStatsInd(parseStatsIndividuali(pages))
+        setStatsInd(parseStatsIndividuali(posPages))
       } else {
         setError('Tipo di PDF non riconosciuto. Sono accettati: Minutaggi Stagione, Presenze Stagione, Statistiche Generali, Statistiche Individuali.')
         setLoading(false)
@@ -284,7 +285,7 @@ export default function PdfImportModal({ onClose, onImportMinutaggi, onImportPre
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
                       <thead>
                         <tr style={{ background: 'var(--g50)', position: 'sticky', top: 0 }}>
-                          {['Codice','Min','WR','Work Rate %','GPS Vol (m)','GPS %','Ball Carrier','Tackle Dom.','Clean Out'].map(h => (
+                          {['Giocatore','Min','WR','Work Rate %','GPS Vol (m)','GPS %','Ball Carrier','Tackle Dom.','Clean Out'].map(h => (
                             <th key={h} style={{ padding: '7px 9px', textAlign: 'left', fontWeight: 700, color: 'var(--g400)', fontSize: 10, textTransform: 'uppercase', borderBottom: '1px solid var(--g100)', whiteSpace: 'nowrap' }}>{h}</th>
                           ))}
                         </tr>
@@ -292,7 +293,7 @@ export default function PdfImportModal({ onClose, onImportMinutaggi, onImportPre
                       <tbody>
                         {statsInd.players.map((p, i) => (
                           <tr key={i} style={{ borderBottom: '1px solid var(--g50)' }}>
-                            <td style={{ padding: '7px 9px', fontWeight: 700, color: 'var(--navy)' }}>{p.code}</td>
+                            <td style={{ padding: '7px 9px', fontWeight: 700, color: 'var(--navy)' }}>{p.name}</td>
                             <td style={{ padding: '7px 9px', color: 'var(--g500)' }}>{p.minuti}'</td>
                             <td style={{ padding: '7px 9px', fontWeight: 600 }}>{p.wrPesato.toFixed(1)}</td>
                             <td style={{ padding: '7px 9px' }}>
