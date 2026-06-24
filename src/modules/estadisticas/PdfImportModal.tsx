@@ -8,10 +8,10 @@ import {
 
 interface Props {
   onClose: () => void
-  onImportMinutaggi: (rows: MinutaggiRow[]) => void
-  onImportPresenze: (rows: PresenzeRow[]) => void
-  onImportStatsGenerali: (data: StatsGenerali) => void
-  onImportStatsIndividuali: (data: StatsIndividuali) => void
+  onImportMinutaggi: (rows: MinutaggiRow[], fileName: string) => void
+  onImportPresenze: (rows: PresenzeRow[], fileName: string) => void
+  onImportStatsGenerali: (data: StatsGenerali, fileName: string) => void
+  onImportStatsIndividuali: (data: StatsIndividuali, fileName: string) => void
 }
 
 type Step = 'upload' | 'preview' | 'done'
@@ -60,10 +60,10 @@ export default function PdfImportModal({ onClose, onImportMinutaggi, onImportPre
   }
 
   function handleConfirm() {
-    if (pdfType === 'minutaggi') onImportMinutaggi(minutaggi)
-    else if (pdfType === 'presenze') onImportPresenze(presenze)
-    else if (pdfType === 'stats_generali' && statsGen) onImportStatsGenerali(statsGen)
-    else if (pdfType === 'stats_individuali' && statsInd) onImportStatsIndividuali(statsInd)
+    if (pdfType === 'minutaggi') onImportMinutaggi(minutaggi, fileName)
+    else if (pdfType === 'presenze') onImportPresenze(presenze, fileName)
+    else if (pdfType === 'stats_generali' && statsGen) onImportStatsGenerali(statsGen, fileName)
+    else if (pdfType === 'stats_individuali' && statsInd) onImportStatsIndividuali(statsInd, fileName)
     onClose()
   }
 

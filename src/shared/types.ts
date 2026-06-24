@@ -25,3 +25,15 @@ export interface ConvocatoriaJugador { playerId:string; playerName:string; posit
 export interface Convocatoria { id:string; clubId:string; eventoId:string|null; titulo:string; fecha:string; horaConcentracion:string|null; horaPartido:string|null; lugar:string|null; rival:string|null; transporte:string|null; equipamiento:string[]; notas:string|null; jugadores:ConvocatoriaJugador[]; createdBy:string }
 export interface PlayerMatchStats { playerId:string; playerName:string; position:string; minutosJugados:number; tries:number; asistencias:number; metrosGanados:number; pasesCompletados:number; pasesTotales:number; carreras:number; tacklesCompletados:number; tacklesTotales:number; tacklesFallados:number; turnoversGanados:number; lineoutsGanados:number; lineoutsTotales:number; amarillas:number; rojas:number; penalesCometidos:number; pateadasTotal:number; pateadasMetros:number; nota:string|null }
 export interface TeamMatchStats { puntosAFavor:number; puntoEnContra:number; triesAFavor:number; triesEnContra:number; posesionPct:number; territorioPct:number; scrumGanados:number; scrumTotales:number; lineoutGanados:number; lineoutTotales:number; metrosTotales:number; pasesTotales:number; tacklesPct:number; penalesCometidos:number; amarillas:number; rojas:number }
+
+export interface PdfImportDoc {
+  id: string
+  clubId: string
+  type: 'minutaggi'|'presenze'|'stats_generali'|'stats_individuali'
+  matchKey: string   // e.g. "vs_RUGBY_COLORNO_2026-05-03" or "stagione_25_26"
+  rival: string
+  date: string
+  fileName: string
+  data: any
+  createdAt: any
+}
