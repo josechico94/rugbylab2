@@ -992,3 +992,18 @@ select option { background: var(--white); color: var(--navy) }
   /* ── BOTTOM PADDING for content above bottom nav ─── */
   .page { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important }
 }
+
+/* ── HOME PAGE module tiles dark ── */
+@media (max-width: 768px) {
+  .home-page div[style*="background: #fff"][style*="border: 1px solid var(--g100)"] {
+    background: #0E1724 !important;
+    border-color: rgba(255,255,255,.07) !important;
+  }
+  .home-page div[style*="background: var(--g50)"] {
+    background: rgba(255,255,255,.06) !important;
+  }
+  .home-page button[style*="background: var(--g50)"] {
+    background: rgba(255,255,255,.06) !important;
+    color: rgba(255,255,255,.55) !important;
+  }
+}
