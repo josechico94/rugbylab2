@@ -12,8 +12,11 @@ import { StatCard, Empty as EmptyState } from '@/shared/components/ui'
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer,
   LineChart, Line, XAxis, YAxis, Tooltip,
+  BarChart, Bar, Cell,
 } from 'recharts'
 import type { Match, PlayerMatchStats, TeamMatchStats } from '@/shared/types'
+import PdfImportModal from './PdfImportModal'
+import type { MinutaggiRow, PresenzeRow, StatsGenerali, StatsIndividuali } from '@/shared/utils/pdfParser'
 
 const COMPETICIONES = ['Campionato Regionale','Coppa Regionale','Torneo di Apertura','Torneo di Chiusura','Amichevole','Altro']
 
@@ -72,11 +75,17 @@ export default function EstadisticasPage() {
   const [matches,  setMatches]  = useState<Match[]>([])
   const [players,  setPlayers]  = useState<{id:string;name:string;position:string}[]>([])
   const [loading,  setLoading]  = useState(true)
-  const [view,     setView]     = useState<'list'|'detail'|'form'>('list')
+  const [view,     setView]     = useState<'list'|'detail'|'form'|'stagione'>('list')
   const [active,   setActive]   = useState<Match|null>(null)
   const [dTab,     setDTab]     = useState<'equipo'|'jugadores'|'radar'>('equipo')
   const [saving,   setSaving]   = useState(false)
   const [toast,    setToast]    = useState<{msg:string;ok:boolean}|null>(null)
+  const [showPdfModal, setShowPdfModal] = useState(false)
+  const [stagTab,  setStagTab]  = useState<'minutaggi'|'presenze'>('minutaggi')
+
+  // Seasonal imported data (stored in-session; could be persisted to Firestore later)
+  const [minutaggiData, setMinutaggiData] = useState<MinutaggiRow[]>([])
+  const [presenzeData,  setPresenzeData]  = useState<PresenzeRow[]>([])
 
   const [fRival,  setFRival]  = useState('')
   const [fFecha,  setFFecha]  = useState(new Date().toISOString().slice(0,10))
@@ -125,6 +134,49 @@ export default function EstadisticasPage() {
 
   function upPlayer(id:string,patch:Partial<PlayerMatchStats>){
     setFPlayers(prev=>prev.map(p=>p.playerId===id?{...p,...patch}:p))
+  }
+
+  function handleImportStatsGenerali(data: StatsGenerali) {
+    // Auto-fill match info and team stats from the SG PDF
+    if (data.rival) setFRival(data.rival)
+    if (data.date) setFFecha(data.date)
+    setFTeam(t => ({
+      ...t,
+      scrumGanados:    data.mischiaNostre_pos,
+      scrumTotales:    data.mischiaNostre,
+      lineoutGanados:  data.toucheNostre_pos,
+      lineoutTotales:  data.toucheNostre,
+      penalesCometidos:data.calciPunizione,
+      tacklesPct: data.placcaggiTotali > 0
+        ? Math.round((data.placcaggiTotali - data.placcaggiMancati) / data.placcaggiTotali * 100)
+        : t.tacklesPct,
+    }))
+    toast2(`📊 Statistiche generali importate: vs ${data.rival || '?'} · ${data.placcaggiTotali} placcaggi`)
+    setView('form')
+  }
+
+  function handleImportStatsIndividuali(data: StatsIndividuali) {
+    // Map GPS player codes to players in the roster by partial name match
+    setFPlayers(prev => prev.map(fp => {
+      const nameUp = fp.playerName.toUpperCase()
+      const match = data.players.find(p => {
+        const code = p.code.toUpperCase()
+        const first = nameUp.split(' ')[0]
+        const last  = nameUp.split(' ').slice(-1)[0]
+        return nameUp.includes(code) || last.startsWith(code.slice(0,4)) || first.startsWith(code.slice(0,4))
+      })
+      if (!match) return fp
+      return {
+        ...fp,
+        minutosJugados: match.minuti || fp.minutosJugados,
+        metrosGanados:  match.gpsVolume ? Math.round(match.gpsVolume) : fp.metrosGanados,
+        carreras:       match.ballCarrierAvanzante || fp.carreras,
+        tacklesCompletados: match.tackleDominante + match.tackleNeutro || fp.tacklesCompletados,
+        tacklesFallados: match.tackleIneffice || fp.tacklesFallados,
+        nota: `WR ${match.wrPesato.toFixed(1)} · GPS ${match.gpsPerformancePct}%`,
+      }
+    }))
+    toast2(`🏃 Stats individuali importate: ${data.players.length} giocatori`)
   }
 
   async function handleSave(){
@@ -189,6 +241,16 @@ export default function EstadisticasPage() {
     <div className="fade-in" style={{padding: isMobile ? "14px 14px 0" : undefined}}>
       {toast&&<div style={{position:'fixed',top:20,right:24,zIndex:1000,background:toast.ok?'var(--navy)':'var(--red)',color:'#fff',padding:'12px 20px',borderRadius:10,fontSize:13,fontWeight:600}}>{toast.msg}</div>}
 
+      {showPdfModal&&(
+        <PdfImportModal
+          onClose={()=>setShowPdfModal(false)}
+          onImportMinutaggi={rows=>{setMinutaggiData(rows);setView('stagione');setStagTab('minutaggi');toast2(`⏱ Minutaggi importati: ${rows.length} giocatori`)}}
+          onImportPresenze={rows=>{setPresenzeData(rows);setView('stagione');setStagTab('presenze');toast2(`📋 Presenze importate: ${rows.length} giocatori`)}}
+          onImportStatsGenerali={handleImportStatsGenerali}
+          onImportStatsIndividuali={handleImportStatsIndividuali}
+        />
+      )}
+
       {/* ══ LIST ══ */}
       {view==='list'&&<>
         <div className="stats-grid" style={{marginBottom:24}}>
@@ -198,9 +260,13 @@ export default function EstadisticasPage() {
           <StatCard label="Media punti subiti" value={String(avgPC)} accentColor="var(--red)" deltaType="warn"/>
         </div>
 
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16,gap:10,flexWrap:'wrap'}}>
           <div style={{fontSize:14,fontWeight:700}}>Storico partite</div>
-          {canEdit&&<button onClick={openCreate} style={{padding:'9px 18px',border:'none',borderRadius:9,background:'var(--red)',color:'#fff',fontSize:13,fontWeight:700,cursor:'pointer'}}>+ Registra partita</button>}
+          <div style={{display:'flex',gap:8}}>
+            <button onClick={()=>setView('stagione')} style={{padding:'9px 14px',border:'1px solid var(--g100)',borderRadius:9,background:'#fff',color:'var(--g500)',fontSize:13,fontWeight:600,cursor:'pointer'}}>📂 Stagione</button>
+            <button onClick={()=>setShowPdfModal(true)} style={{padding:'9px 14px',border:'1px solid var(--g100)',borderRadius:9,background:'#fff',color:'var(--red)',fontSize:13,fontWeight:600,cursor:'pointer'}}>📄 Importa PDF</button>
+            {canEdit&&<button onClick={openCreate} style={{padding:'9px 18px',border:'none',borderRadius:9,background:'var(--red)',color:'#fff',fontSize:13,fontWeight:700,cursor:'pointer'}}>+ Registra partita</button>}
+          </div>
         </div>
 
         {loading?<div style={{textAlign:'center',padding:40,color:'var(--g300)'}}>Caricamento...</div>
@@ -379,6 +445,109 @@ export default function EstadisticasPage() {
         </div>}
       </>}
 
+      {/* ══ STAGIONE ══ */}
+      {view==='stagione'&&<>
+        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
+          <button onClick={()=>setView('list')} style={{border:'none',background:'transparent',color:'var(--red)',fontSize:13,fontWeight:600,cursor:'pointer',padding:0}}>← Indietro</button>
+          <div style={{flex:1}}>
+            <h2 style={{margin:0,fontSize:18,fontWeight:800}}>Dati Stagione</h2>
+            <div style={{fontSize:12,color:'var(--g400)',marginTop:2}}>Dati importati dai PDF ufficiali del club</div>
+          </div>
+          <button onClick={()=>setShowPdfModal(true)} style={{padding:'9px 14px',border:'1px solid var(--g100)',borderRadius:9,background:'#fff',color:'var(--red)',fontSize:12,fontWeight:600,cursor:'pointer'}}>📄 Carica altro PDF</button>
+        </div>
+
+        <div className="module-tabs" style={{display:'flex',gap:0,marginBottom:20,background:'#fff',border:'1px solid var(--g100)',borderRadius:10,padding:4,width:'fit-content'}}>
+          {(['minutaggi','presenze'] as const).map(t=>(
+            <button key={t} onClick={()=>setStagTab(t)} style={{padding:'7px 20px',border:'none',borderRadius:7,fontSize:13,fontWeight:600,cursor:'pointer',background:stagTab===t?'var(--navy)':'transparent',color:stagTab===t?'#fff':'var(--g400)',transition:'all 0.15s'}}>
+              {t==='minutaggi'?'⏱ Minutaggi':'📋 Presenze'}
+            </button>
+          ))}
+        </div>
+
+        {stagTab==='minutaggi'&&(
+          minutaggiData.length===0
+          ?<EmptyState icon="⏱" title="Nessun dato minutaggi" desc="Importa il PDF dei Minutaggi Stagione per visualizzare i dati"/>
+          :<div>
+            <div style={{marginBottom:16,display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12}}>
+              <StatCard label="Giocatori" value={String(minutaggiData.length)} accentColor="var(--red)"/>
+              <StatCard label="Minuti totali" value={String(minutaggiData.reduce((a,r)=>a+r.minutiStagione,0))} accentColor="#5B21B6"/>
+              <StatCard label="Presenze avg" value={String(Math.round(minutaggiData.reduce((a,r)=>a+r.presenzeTotal,0)/minutaggiData.length))} accentColor="#0369A1"/>
+            </div>
+            <div className="card">
+              <div style={{marginBottom:12,padding:'14px 18px 0',fontSize:13,fontWeight:700,color:'var(--navy)'}}>Minuti giocati per giocatore</div>
+              <div style={{padding:'0 18px 12px'}}>
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={[...minutaggiData].slice(0,20)} layout="vertical" margin={{left:120,right:20,top:4,bottom:4}}>
+                    <XAxis type="number" tick={{fontSize:10,fill:'var(--g400)'}} axisLine={false} tickLine={false}/>
+                    <YAxis type="category" dataKey="name" tick={{fontSize:10,fill:'var(--g500)'}} axisLine={false} tickLine={false} width={120}/>
+                    <Tooltip formatter={(v:any)=>[`${v} min`,'Minuti']} contentStyle={{borderRadius:8,fontSize:12}}/>
+                    <Bar dataKey="minutiStagione" radius={[0,4,4,0]}>
+                      {minutaggiData.slice(0,20).map((_,i)=><Cell key={i} fill={i===0?'var(--red)':i<5?'#1A2F5A':'#94A3B8'}/>)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="table-scroll-wrap">
+                <div style={{display:'grid',gridTemplateColumns:'1fr 70px 70px 80px 80px 80px 90px',gap:8,padding:'10px 18px',background:'var(--g50)',borderTop:'1px solid var(--g100)',minWidth:560}}>
+                  {['Giocatore','Start','Finish','Indisp.','N.Conv.','Presenze','Minuti'].map(h=>(
+                    <div key={h} style={{fontSize:10,fontWeight:700,color:'var(--g400)',textTransform:'uppercase'}}>{h}</div>
+                  ))}
+                </div>
+                {minutaggiData.map((r,i)=>(
+                  <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 70px 70px 80px 80px 80px 90px',gap:8,padding:'10px 18px',borderTop:'1px solid var(--g50)',alignItems:'center',minWidth:560}}>
+                    <div style={{fontSize:13,fontWeight:600,color:'var(--navy)'}}>{r.name}</div>
+                    <div style={{fontSize:12,color:'var(--g500)'}}>{r.starter}</div>
+                    <div style={{fontSize:12,color:'var(--g500)'}}>{r.finisher}</div>
+                    <div style={{fontSize:12,color:'var(--g500)'}}>{r.indisponibile}</div>
+                    <div style={{fontSize:12,color:'var(--g500)'}}>{r.nonConvocato}</div>
+                    <div style={{fontSize:12,fontWeight:600}}>{r.presenzeTotal}</div>
+                    <div style={{fontSize:13,fontWeight:800,color:'var(--red)'}}>{r.minutiStagione}'</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {stagTab==='presenze'&&(
+          presenzeData.length===0
+          ?<EmptyState icon="📋" title="Nessun dato presenze" desc="Importa il PDF delle Presenze Stagione per visualizzare i dati"/>
+          :<div>
+            <div style={{marginBottom:16,display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12}}>
+              <StatCard label="Giocatori" value={String(presenzeData.length)} accentColor="var(--red)"/>
+              <StatCard label="Media % presenze" value={`${Math.round(presenzeData.reduce((a,r)=>a+r.pct,0)/presenzeData.length)}%`} accentColor="#0A6E2E"/>
+              <StatCard label="Ottimo (≥85%)" value={String(presenzeData.filter(r=>r.pct>=85).length)} accentColor="#065F46"/>
+              <StatCard label="Scarso (<70%)" value={String(presenzeData.filter(r=>r.pct<70).length)} accentColor="var(--red)" deltaType="warn"/>
+            </div>
+            <div className="card">
+              <div className="table-scroll-wrap">
+                <div style={{display:'grid',gridTemplateColumns:'1fr 70px 70px 70px 70px 70px 70px 90px',gap:8,padding:'10px 18px',background:'var(--g50)',minWidth:600}}>
+                  {['Giocatore','%','Presenti','Infortuni','Conv.','Malattia','Assenti','Fascia'].map(h=>(
+                    <div key={h} style={{fontSize:10,fontWeight:700,color:'var(--g400)',textTransform:'uppercase'}}>{h}</div>
+                  ))}
+                </div>
+                {presenzeData.map((r,i)=>{
+                  const fasciaColor = r.fascia==='OTTIMO'?'#065F46':r.fascia==='BUONO'?'#0369A1':r.fascia==='SCARSO'?'#B45309':'#C8102E'
+                  const fasciaBg = r.fascia==='OTTIMO'?'#EDFFF5':r.fascia==='BUONO'?'#EFF6FF':r.fascia==='SCARSO'?'#FFFAEB':'#FFF0F2'
+                  return (
+                    <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 70px 70px 70px 70px 70px 70px 90px',gap:8,padding:'10px 18px',borderTop:'1px solid var(--g50)',alignItems:'center',minWidth:600}}>
+                      <div style={{fontSize:13,fontWeight:600,color:'var(--navy)'}}>{r.name}</div>
+                      <div style={{fontSize:13,fontWeight:800,color:r.pct>=85?'#065F46':r.pct>=70?'#0369A1':r.pct>=50?'#B45309':'#C8102E'}}>{r.pct}%</div>
+                      <div style={{fontSize:12,color:'var(--g500)'}}>{r.presenti}</div>
+                      <div style={{fontSize:12,color:'var(--g500)'}}>{r.infortuni}</div>
+                      <div style={{fontSize:12,color:'var(--g500)'}}>{r.convocato}</div>
+                      <div style={{fontSize:12,color:'var(--g500)'}}>{r.malattia}</div>
+                      <div style={{fontSize:12,color:'var(--g500)'}}>{r.assenti}</div>
+                      <div>{r.fascia&&<span style={{background:fasciaBg,color:fasciaColor,fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:20}}>{r.fascia}</span>}</div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+      </>}
+
       {/* ══ FORM ══ */}
       {view==='form'&&<>
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
@@ -386,7 +555,8 @@ export default function EstadisticasPage() {
             <h2 style={{margin:0,fontSize:18,fontWeight:800}}>{active?'Modifica partita':'Registra partita'}</h2>
             <p style={{margin:'3px 0 0',fontSize:12,color:'var(--g400)'}}>Carica le statistiche della squadra e di ogni giocatore</p>
           </div>
-          <div style={{display:'flex',gap:10}}>
+          <div style={{display:'flex',gap:8}}>
+            <button onClick={()=>setShowPdfModal(true)} style={{padding:'9px 14px',border:'1px solid var(--g100)',borderRadius:9,background:'#fff',color:'var(--red)',fontSize:12,fontWeight:600,cursor:'pointer'}}>📄 Importa PDF</button>
             <button onClick={()=>setView('list')} style={{padding:'9px 16px',border:'1px solid var(--g100)',borderRadius:9,background:'#fff',color:'var(--g500)',fontSize:13,fontWeight:600,cursor:'pointer'}}>Annulla</button>
             <button onClick={handleSave} disabled={saving} style={{padding:'9px 20px',border:'none',borderRadius:9,background:saving?'#C5D5C9':'var(--red)',color:'#fff',fontSize:13,fontWeight:700,cursor:'pointer'}}>{saving?'Salvataggio...':'Salva partita'}</button>
           </div>
