@@ -22,10 +22,10 @@ const STATUS_OPTIONS = ['Disponibile','Infortunato','Dubbio','Squalificato'] as 
 type PlayerStatus = typeof STATUS_OPTIONS[number]
 
 const STATUS_META: Record<PlayerStatus,{bg:string;color:string;dot:string}> = {
-  Disponible: { bg:'#E6F9EE', color:'#0A6E2E', dot:'#00C853' },
-  Lesionado:  { bg:'#FFE8EC', color:'var(--red)', dot:'#C8102E' },
-  Duda:       { bg:'#FFF8E1', color:'#B45309', dot:'#FFB300' },
-  Suspendido: { bg:'#EEF0F3', color:'#4B5563', dot:'#9CA3AF' },
+  Disponibile: { bg:'#E6F9EE', color:'#0A6E2E', dot:'#00C853' },
+  Infortunato: { bg:'#FFE8EC', color:'#C8102E', dot:'#C8102E' },
+  Dubbio:      { bg:'#FFF8E1', color:'#B45309', dot:'#FFB300' },
+  Squalificato:{ bg:'#EEF0F3', color:'#4B5563', dot:'#9CA3AF' },
 }
 
 function getInitials(name: string) {
@@ -47,7 +47,7 @@ function PlayerAvatar({ name, photoUrl, size=40 }: { name:string; photoUrl?:stri
 }
 
 function StatusBadge({ status }: { status:string }) {
-  const m = STATUS_META[status as PlayerStatus] ?? STATUS_META.Disponible
+  const m = STATUS_META[status as PlayerStatus] ?? STATUS_META.Disponibile
   return (
     <span style={{display:'inline-flex',alignItems:'center',gap:5,background:m.bg,color:m.color,fontSize:11,fontWeight:600,padding:'3px 10px',borderRadius:99}}>
       <span style={{width:6,height:6,borderRadius:'50%',background:m.dot,flexShrink:0}}/>
@@ -62,7 +62,7 @@ function FL({ children }: { children: React.ReactNode }) {
 
 const emptyForm = () => ({
   name:'', number:'', positions:[] as string[],
-  status:'Disponible' as PlayerStatus,
+  status:'Disponibile' as PlayerStatus,
   birthDate:'', weight:'', height:'', notes:'', photoUrl:'',
 })
 type FormData = ReturnType<typeof emptyForm>
@@ -184,9 +184,9 @@ export default function PlantelPage() {
 
   const stats = {
     total:players.length,
-    disp:players.filter(p=>p.status==='Disponible').length,
-    les:players.filter(p=>p.status==='Lesionado').length,
-    duda:players.filter(p=>p.status==='Duda').length,
+    disp:players.filter(p=>p.status==='Disponibile').length,
+    les:players.filter(p=>p.status==='Infortunato').length,
+    duda:players.filter(p=>p.status==='Dubbio').length,
   }
 
   return (

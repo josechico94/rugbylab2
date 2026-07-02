@@ -1,8 +1,7 @@
 export type Role='admin'|'cuerpo_tecnico'|'jugador'
-export interface Player{id:string;name:string;position:string;positions?:string[];number:number;role:Role;status:'Disponible'|'Lesionado'|'Duda'|'Suspendido';avatarUrl?:string;birthDate?:string;weight?:number;height?:number;notes?:string;clubId:string}
-export interface Evento{id:string;clubId:string;titulo:string;tipo:'partido'|'entrenamiento'|'concentracion'|'medico'|'otro';fecha:string;horaInicio?:string;lugar?:string;rival?:string;obligatorio:boolean;createdBy:string}
+export interface UserProfile{uid:string;email:string;name:string;role:Role;clubId:string;photoUrl?:string;createdAt?:any}
+export interface Player{id:string;name:string;position:string;positions?:string[];number:number;role:Role;status:'Disponibile'|'Infortunato'|'Dubbio'|'Squalificato';avatarUrl?:string;photoUrl?:string;birthDate?:string;weight?:number;height?:number;notes?:string;clubId:string}
 export interface Match{id:string;clubId:string;rival:string;fecha:string;cancha:string;competicion:string;teamStats:any;playerStats:any[];createdBy:string}
-export interface Lesion{id:string;playerId:string;playerName:string;clubId:string;zona:string;descripcion:string;fechaLesion:string;estado:'activa'|'en_recuperacion'|'alta_medica';createdBy:string}
 
 export type BlockType = 'entrada_calor'|'principal'|'circuito'|'skills'|'vuelta_calma'
 export interface SetDetail { reps:number; weight:number|null }

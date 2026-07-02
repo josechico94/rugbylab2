@@ -260,7 +260,7 @@ export default function ComunicacionPage() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--navy)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.name}</div>
                   </div>
-                  <Pill variant={rolePillV[m.role]}>{roleLabel[m.role]}</Pill>
+                  <Pill type={rolePillV[m.role]}>{roleLabel[m.role]}</Pill>
                 </div>
               )
             })}

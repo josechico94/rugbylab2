@@ -251,7 +251,7 @@ export default function UsersPage() {
 
               {/* Role */}
               <div>
-                <Pill variant={ROLES.find(r => r.value === u.role)?.variant ?? 'gray'}>
+                <Pill type={ROLES.find(r => r.value === u.role)?.variant ?? 'gray'}>
                   {ROLES.find(r => r.value === u.role)?.label ?? u.role}
                 </Pill>
               </div>

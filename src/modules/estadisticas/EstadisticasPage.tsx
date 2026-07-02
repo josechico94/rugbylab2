@@ -121,7 +121,7 @@ export default function EstadisticasPage() {
 
   function openEdit(m:Match){
     setFRival(m.rival);setFFecha(m.fecha)
-    setFCancha(m.cancha);setFComp(m.competicion)
+    setFCancha(m.cancha as any);setFComp(m.competicion)
     setFTeam({...m.teamStats})
     setFPlayers(JSON.parse(JSON.stringify(m.playerStats)))
     setActive(m);setView('form')

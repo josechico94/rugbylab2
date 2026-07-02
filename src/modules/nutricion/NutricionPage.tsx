@@ -89,7 +89,7 @@ export default function NutricionPage() {
       const newItems = result.items.map(i => ({ name:i.name, quantity:i.quantity, calories:i.calories, protein:i.protein, carbs:i.carbs, fat:i.fat }))
       setFMeals(prev => {
         const updated = [...prev]
-        const lunchIdx = updated.findIndex(m => m.type === 'Colazione' || m.type === 'Desayuno')
+        const lunchIdx = updated.findIndex(m => m.type === 'Colazione')
         if (lunchIdx >= 0) {
           updated[lunchIdx] = { ...updated[lunchIdx], items: [...updated[lunchIdx].items.filter((i:any)=>i.name), ...newItems] }
         } else {
@@ -110,7 +110,7 @@ export default function NutricionPage() {
       setFCarb(String(Math.max(totalCarb, 200)))
       setFFat(String(Math.max(totalFat, 50)))
       const items = result.items.map(i => ({ name:i.name, quantity:i.quantity, calories:i.calories, protein:i.protein, carbs:i.carbs, fat:i.fat }))
-      setFMeals([{ type:'Colazione', items }, ...MEAL_TYPES.filter(t=>t!=='Desayuno').map(emptyMeal)])
+      setFMeals([{ type:'Colazione', items }, ...MEAL_TYPES.filter(t=>t!=='Colazione').map(emptyMeal)])
       setActive(null)
       setModal('form')
     }

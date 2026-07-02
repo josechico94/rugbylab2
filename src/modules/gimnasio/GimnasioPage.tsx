@@ -6,8 +6,8 @@ import { db } from '@/shared/firebase/config'
 import { useAuthStore } from '@/shared/store/authStore'
 import { useIsMobile } from '@/shared/hooks/useIsMobile'
 import { Empty, Toast } from '@/shared/components/ui'
-import PhotoScanner from '@/shared/components/PhotoScanner'
-import { routineToExcel } from '@/shared/utils/export'
+import PhotoScanner, { type ScanResult } from '@/shared/components/PhotoScanner'
+import { routineToExcel, exportPDF } from '@/shared/utils/export'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 const DAYS    = ['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'] as const
