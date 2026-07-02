@@ -313,8 +313,8 @@ export default function GimnasioPage(){
 
       {/* FORM MODAL */}
       {modal==='form'&&(
-        <div className="overlay" onClick={()=>setModal('none')}>
-          <div className="modal" style={{maxWidth:800,maxHeight:'90dvh',overflowY:'auto'}} onClick={e=>e.stopPropagation()}>
+        <div className="overlay overlay-full" onClick={()=>setModal('none')}>
+          <div className="modal modal-full" onClick={e=>e.stopPropagation()}>
             <div className="modal-hdr">
               <div><div className="modal-title">{active?'MODIFICA SCHEDA':'NUOVA SCHEDA'}</div><div style={{fontSize:12,color:'var(--g400)',marginTop:2}}>Organizza per blocchi con serie individualizzate</div></div>
               <button className="modal-x" onClick={()=>setModal('none')}>×</button>
@@ -398,7 +398,7 @@ export default function GimnasioPage(){
                   )})}
                 </div>
               ))}
-              <div style={{display:'flex',gap:10,paddingTop:14,borderTop:'1px solid var(--g100)'}}>
+              <div className="modal-actions">
                 <button onClick={()=>setModal('none')} className="btn btn-ghost" style={{flex:1}}>Annulla</button>
                 <button onClick={handleSave} disabled={saving||!fPid} className="btn btn-red" style={{flex:2,opacity:saving||!fPid?0.6:1}}>{saving?'Salvataggio...':'Salva scheda'}</button>
               </div>

@@ -621,8 +621,8 @@ function AddModal({players,events,lUser,isAllowed,onClose,showToast}:any){
     }catch(e:any){showToast("Error: "+e.message)}finally{setSaving(false)}
   }
   return(
-    <div className="overlay" onClick={onClose}>
-      <div className="modal" style={{maxWidth:680}} onClick={e=>e.stopPropagation()}>
+    <div className="overlay overlay-full" onClick={onClose}>
+      <div className="modal modal-full" onClick={e=>e.stopPropagation()}>
         <div className="modal-hdr"><div className="modal-title">➕ AGREGAR PUNTOS</div><button className="modal-x" onClick={onClose}>×</button></div>
         <div className="modal-body">
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>

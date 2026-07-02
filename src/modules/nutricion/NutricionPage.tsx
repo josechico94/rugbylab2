@@ -317,8 +317,8 @@ export default function NutricionPage() {
 
       {/* ── FORM MODAL ── */}
       {modal==='form' && (
-        <div className="overlay" onClick={()=>setModal('none')}>
-          <div className="modal" style={{ maxWidth:760, maxHeight:'92dvh', overflowY:'auto' }} onClick={e=>e.stopPropagation()}>
+        <div className="overlay overlay-full" onClick={()=>setModal('none')}>
+          <div className="modal modal-full" onClick={e=>e.stopPropagation()}>
             <div className="modal-hdr">
               <div>
                 <div className="modal-title">{active?'MODIFICA PIANO':'NUOVO PIANO NUTRIZIONALE'}</div>
@@ -389,7 +389,7 @@ export default function NutricionPage() {
                 </div>
               ))}
 
-              <div style={{ display:'flex', gap:8, paddingTop:14, borderTop:'1px solid var(--g100)', marginTop:8 }}>
+              <div className="modal-actions">
                 <button onClick={()=>setModal('none')} className="btn btn-ghost" style={{ flex:1 }}>Annulla</button>
                 <button onClick={handleSave} disabled={saving||!fPid} className="btn btn-red" style={{ flex:2, opacity:saving||!fPid?0.6:1 }}>
                   {saving ? 'Salvataggio...' : active ? 'Salva modifiche' : 'Crea piano nutrizionale'}

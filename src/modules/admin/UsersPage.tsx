@@ -281,12 +281,13 @@ export default function UsersPage() {
 
       {/* ── EDIT MODAL ── */}
       {modal.type === 'edit' && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,34,24,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 500 }}>
-          <div style={{ background: '#fff', borderRadius: 16, padding: '28px 32px', width: '100%', maxWidth: 440, animation: 'fadeIn 0.15s ease' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--navy)' }}>Modifica utente</h2>
-              <button onClick={() => setModal({ type: 'none' })} style={{ border: 'none', background: 'none', fontSize: 20, color: 'var(--g400)', cursor: 'pointer' }}>×</button>
+        <div className="overlay overlay-full" onClick={() => setModal({ type: 'none' })}>
+          <div className="modal modal-full" onClick={e => e.stopPropagation()}>
+            <div className="modal-hdr">
+              <div className="modal-title">MODIFICA UTENTE</div>
+              <button className="modal-x" onClick={() => setModal({ type: 'none' })}>×</button>
             </div>
+            <div className="modal-body">
 
             {/* User preview */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: 'var(--g50)', borderRadius: 10, marginBottom: 20 }}>
@@ -332,17 +333,19 @@ export default function UsersPage() {
             </div>
 
             {/* Buttons */}
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => setModal({ type: 'none' })} style={{ flex: 1, padding: 12, border: '1px solid var(--g100)', borderRadius: 10, background: '#fff', color: 'var(--g500)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+            <div className="modal-actions">
+              <button onClick={() => setModal({ type: 'none' })} className="btn btn-ghost" style={{ flex: 1 }}>
                 Annulla
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving || !editName.trim()}
-                style={{ flex: 2, padding: 12, border: 'none', borderRadius: 10, background: saving ? '#C5D5C9' : 'var(--red)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer' }}
+                className="btn btn-red"
+                style={{ flex: 2, opacity: saving ? 0.6 : 1 }}
               >
                 {saving ? 'Salvataggio...' : 'Salva modifiche'}
               </button>
+            </div>
             </div>
           </div>
         </div>
