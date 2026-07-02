@@ -295,7 +295,7 @@ export default function EntrenamientosPage() {
 
   // ── LIBRARY VIEW ─────────────────────────────────────────────
   return (
-    <div className="fade-in">
+    <div className="fade-in" style={{padding: isMobile ? "16px 16px 0" : undefined}}>
       {toast && <Toast msg={toast.msg} type={toast.ok ? 'ok' : 'err'} />}
 
       {/* Stats by type */}

@@ -368,14 +368,18 @@ function HistTab({tx,players,events,isAllowed,showToast}:any){
   return(
     <div>
       <div className="card" style={{marginBottom:14,padding:"14px 16px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 160px 130px 130px auto",gap:10,alignItems:"end",flexWrap:"wrap"}}>
-          <div><div className="fl">Buscar</div><input className="input" placeholder="Giocatore, evento..." value={search} onChange={e=>setSearch(e.target.value)}/></div>
-          <div><div className="fl">Equipo</div><select className="input" value={team} onChange={e=>setTeam(e.target.value)}><option value="">Todos</option>{TEAMS.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></div>
-          <div><div className="fl">Desde</div><input className="input" type="date" value={from} onChange={e=>setFrom(e.target.value)}/></div>
-          <div><div className="fl">Hasta</div><input className="input" type="date" value={to} onChange={e=>setTo(e.target.value)}/></div>
-          {(search||team||from||to)&&<button onClick={()=>{setSearch("");setTeam("");setFrom("");setTo("")}} className="btn btn-ghost btn-sm">✕</button>}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,alignItems:"end"}}>
+          <div style={{gridColumn:"1/-1"}}><div className="fl">Buscar</div><input className="input" placeholder="Giocatore, evento..." value={search} onChange={e=>setSearch(e.target.value)}/></div>
+          <div><div className="fl">Squadra</div><select className="input" value={team} onChange={e=>setTeam(e.target.value)}><option value="">Tutte</option>{TEAMS.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+            <div><div className="fl">Desde</div><input className="input" type="date" value={from} onChange={e=>setFrom(e.target.value)}/></div>
+            <div><div className="fl">Hasta</div><input className="input" type="date" value={to} onChange={e=>setTo(e.target.value)}/></div>
+          </div>
         </div>
-        <div style={{fontSize:11,color:"var(--g400)",marginTop:8}}>{filtered.length} movimientos</div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:8}}>
+          <span style={{fontSize:11,color:"var(--g400)"}}>{filtered.length} movimenti</span>
+          {(search||team||from||to)&&<button onClick={()=>{setSearch("");setTeam("");setFrom("");setTo("")}} className="btn btn-ghost btn-sm">✕ Cancella filtri</button>}
+        </div>
       </div>
       <div className="card">
         <div className="tbl-wrap">
@@ -580,7 +584,7 @@ function AdminTab({events,showToast}:any){
     catch{showToast("Error")}finally{setSaving(false)}
   }
   return(
-    <div style={{display:"grid",gridTemplateColumns:"320px 1fr",gap:16}}>
+    <div className="split-aside" style={{alignItems:"start"}}>
       <div className="card" style={{padding:18}}>
         <div className="card-title" style={{marginBottom:14}}>Nuovo evento</div>
         <div style={{display:"flex",flexDirection:"column",gap:10}}>

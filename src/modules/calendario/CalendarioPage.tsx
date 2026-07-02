@@ -200,27 +200,27 @@ export default function CalendarioPage() {
       )}
 
       {/* Toolbar */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
         {/* View toggle */}
-        <div style={{ display: 'flex', background: '#fff', border: '1px solid var(--g100)', borderRadius: 8, padding: 3, gap: 2 }}>
+        <div style={{ display: 'flex', background: '#fff', border: '1px solid var(--g100)', borderRadius: 8, padding: 3, gap: 2, flexShrink: 0 }}>
           {(['mes','lista'] as const).map(v => (
             <button key={v} onClick={() => setViewMode(v)} style={{ padding: '5px 14px', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: viewMode === v ? 'var(--navy)' : 'transparent', color: viewMode === v ? '#fff' : 'var(--g400)' }}>
-              {v === 'mes' ? '📅 Mes' : '📋 Lista'}
+              {v === 'mes' ? '📅 Mese' : '📋 Lista'}
             </button>
           ))}
         </div>
 
-        {/* Tipo filter */}
-        <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={() => setFilterT('all')} style={{ padding: '6px 12px', borderRadius: 20, border: '1px solid var(--g100)', background: filterT === 'all' ? 'var(--navy)' : '#fff', color: filterT === 'all' ? '#fff' : 'var(--g500)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Todos</button>
-          {TIPOS.map(t => (
-            <button key={t.id} onClick={() => setFilterT(t.id === filterT ? 'all' : t.id)} style={{ padding: '6px 12px', borderRadius: 20, border: `1px solid ${filterT === t.id ? t.color : 'var(--g100)'}`, background: filterT === t.id ? t.bg : '#fff', color: filterT === t.id ? t.color : 'var(--g500)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
-              {t.icon} {t.label}
-            </button>
-          ))}
-        </div>
+        {canEdit && <button onClick={() => openCreate()} style={{ marginLeft: 'auto', padding: '9px 18px', border: 'none', borderRadius: 9, background: 'var(--red)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}>+ Nuovo evento</button>}
+      </div>
 
-        {canEdit && <button onClick={() => openCreate()} style={{ marginLeft: 'auto', padding: '9px 18px', border: 'none', borderRadius: 9, background: 'var(--red)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>+ Nuovo evento</button>}
+      {/* Tipo filter — scrollable row */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 16, overflowX: 'auto', paddingBottom: 4 }}>
+        <button onClick={() => setFilterT('all')} style={{ padding: '6px 12px', borderRadius: 20, border: '1px solid var(--g100)', background: filterT === 'all' ? 'var(--navy)' : '#fff', color: filterT === 'all' ? '#fff' : 'var(--g500)', fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>Tutti</button>
+        {TIPOS.map(t => (
+          <button key={t.id} onClick={() => setFilterT(t.id === filterT ? 'all' : t.id)} style={{ padding: '6px 12px', borderRadius: 20, border: `1px solid ${filterT === t.id ? t.color : 'var(--g100)'}`, background: filterT === t.id ? t.bg : '#fff', color: filterT === t.id ? t.color : 'var(--g500)', fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}>
+            {t.icon} {t.label}
+          </button>
+        ))}
       </div>
 
       {loading ? <div style={{ textAlign: 'center', padding: 40, color: 'var(--g300)' }}>Caricamento...</div> : (<>
@@ -335,16 +335,16 @@ export default function CalendarioPage() {
       {modal === 'form' && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,34,24,0.55)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 500, padding: 20, overflowY: 'auto' }}>
           <div style={{ background: '#fff', borderRadius: 16, width: '100%', maxWidth: 540, animation: 'fadeIn 0.15s ease', marginTop: 20, marginBottom: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 28px 16px', borderBottom: '1px solid var(--g100)', position: 'sticky', top: 0, background: '#fff', zIndex: 1, borderRadius: '16px 16px 0 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px 14px', borderBottom: '1px solid var(--g100)', position: 'sticky', top: 0, background: '#fff', zIndex: 1, borderRadius: '16px 16px 0 0' }}>
               <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: 'var(--navy)' }}>{active ? 'Modifica evento' : 'Nuovo evento'}</h2>
               <button onClick={() => setModal('none')} style={{ width: 32, height: 32, border: 'none', background: 'var(--g100)', borderRadius: '50%', fontSize: 18, color: 'var(--g400)', cursor: 'pointer' }}>×</button>
             </div>
-            <div style={{ padding: '22px 28px 28px' }}>
+            <div style={{ padding: '18px 20px 24px' }}>
 
               {/* Tipo */}
               <div style={{ marginBottom: 16 }}>
                 <Label>Tipo di evento</Label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 7 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 7 }}>
                   {TIPOS.map(t => {
                     const sel = form.tipo === t.id
                     return <button key={t.id} onClick={() => setForm(f => ({ ...f, tipo: t.id }))} style={{ padding: '10px 6px', borderRadius: 9, border: `2px solid ${sel ? t.color : 'var(--g100)'}`, background: sel ? t.bg : '#fff', color: sel ? t.color : 'var(--g400)', fontSize: 11, fontWeight: 700, cursor: 'pointer', textAlign: 'center' }}>
@@ -370,7 +370,7 @@ export default function CalendarioPage() {
               )}
 
               {/* Fecha + Horario */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginBottom: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
                 <div><Label>Fecha</Label><input className="input" type="date" value={form.fecha} onChange={e => setForm(f => ({ ...f, fecha: e.target.value }))} /></div>
                 <div><Label>Ora inizio</Label><input className="input" type="time" value={form.horaInicio} onChange={e => setForm(f => ({ ...f, horaInicio: e.target.value }))} /></div>
                 <div><Label>Ora fine</Label><input className="input" type="time" value={form.horaFin} onChange={e => setForm(f => ({ ...f, horaFin: e.target.value }))} /></div>

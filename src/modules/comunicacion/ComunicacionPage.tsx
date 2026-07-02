@@ -144,7 +144,7 @@ export default function ComunicacionPage() {
 
   return (
     <div className="fade-in" style={{padding: isMobile ? "16px 16px 0" : undefined}}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: isMobile ? 10 : 14, marginBottom: isMobile ? 16 : 24 }}>
         <StatCard label="Messaggi oggi"   value="4"  accentColor="var(--red)" />
         <StatCard label="Membri"       value="27" accentColor="#5B21B6" />
         <StatCard label="Non letti"       value="2"  delta="Nuovi" deltaType="up" accentColor="#E8A020" />
