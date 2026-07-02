@@ -174,7 +174,7 @@ export default function NutricionPage() {
   const totals=active?.meals.reduce((acc,m)=>{m.items.forEach(it=>{acc.cal+=it.calories||0;acc.prot+=it.protein||0;acc.carb+=it.carbs||0;acc.fat+=it.fat||0});return acc},{cal:0,prot:0,carb:0,fat:0})||{cal:0,prot:0,carb:0,fat:0}
 
   return (
-    <div className="fade-in" style={{padding: isMobile ? "14px 14px 0" : undefined}}>
+    <div className="fade-in" style={{padding: isMobile ? "16px 16px 0" : undefined}}>
       {toast && <Toast msg={toast.msg} type={toast.ok?'ok':'err'}/>}
       {scanner && <PhotoScanner mode="food" onClose={()=>setScanner(false)} onResult={onScanResult}/>}
 

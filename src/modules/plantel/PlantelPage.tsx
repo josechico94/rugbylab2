@@ -190,7 +190,7 @@ export default function PlantelPage() {
   }
 
   return (
-    <div className="fade-in" style={{padding: isMobile ? "14px 14px 0" : undefined}}>
+    <div className="fade-in" style={{padding: isMobile ? "16px 16px 0" : undefined}}>
       {toast && <div className={`toast ${toast.ok?'ok':'err'}`}><span style={{fontWeight:700}}>{toast.ok?'✓':'✕'}</span>{toast.msg}</div>}
 
       {/* STATS */}
@@ -247,41 +247,42 @@ export default function PlantelPage() {
           {filtered.length===0 ? (
             <div className="card" style={{padding:'40px 16px',textAlign:'center'}}>
               <div style={{fontSize:32,marginBottom:10,opacity:.3}}>{players.length===0?'🏉':'🔍'}</div>
-              <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:16,letterSpacing:'.05em',color:'rgba(255,255,255,.5)',marginBottom:4}}>
+              <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:16,letterSpacing:'.05em',color:'var(--g400)',marginBottom:4}}>
                 {players.length===0?'La rosa è vuota':'Nessun risultato'}
               </div>
             </div>
           ) : filtered.map((p,i)=>{
             const posArr:string[]=Array.isArray((p as any).positions)?(p as any).positions:[p.position]
             const STATUS_COLORS:any={Disponibile:'#00C853',Infortunato:'var(--red)',Dubbio:'#FFB300',Squalificato:'var(--g400)'}
+            const STATUS_BG:any={Disponibile:'#E6F9EE',Infortunato:'var(--red-l)',Dubbio:'#FFF8E1',Squalificato:'var(--g100)'}
             return (
               <div key={p.id}
                 onClick={()=>setModal({type:'profile',player:p})}
-                style={{display:'flex',alignItems:'center',gap:14,padding:'14px 4px',borderBottom:'1px solid rgba(255,255,255,.06)',cursor:'pointer',transition:'opacity .15s'}}
-                onTouchStart={e=>e.currentTarget.style.opacity='.7'}
-                onTouchEnd={e=>e.currentTarget.style.opacity='1'}
+                style={{display:'flex',alignItems:'center',gap:12,padding:'13px 16px',background:'var(--white)',borderBottom:'1px solid var(--g100)',cursor:'pointer',transition:'background .12s'}}
+                onTouchStart={e=>e.currentTarget.style.background='var(--g50)'}
+                onTouchEnd={e=>e.currentTarget.style.background='var(--white)'}
               >
                 {/* Jersey number */}
-                <div style={{width:36,height:36,borderRadius:10,background:'rgba(245,197,24,.1)',border:'1px solid rgba(245,197,24,.2)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Bebas Neue',sans-serif",fontSize:17,color:'var(--gold)',flexShrink:0}}>
+                <div style={{width:34,height:34,borderRadius:9,background:'var(--gold-l)',border:'1px solid rgba(245,197,24,.4)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Bebas Neue',sans-serif",fontSize:16,color:'var(--gold-d)',flexShrink:0}}>
                   {p.number}
                 </div>
                 {/* Avatar */}
-                <PlayerAvatar name={p.name} photoUrl={p.avatarUrl} size={44}/>
+                <PlayerAvatar name={p.name} photoUrl={(p as any).photoUrl ?? p.avatarUrl} size={40}/>
                 {/* Info */}
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:14,fontWeight:700,color:'#fff',marginBottom:3}} className="truncate">{p.name}</div>
-                  <div style={{display:'flex',gap:6,alignItems:'center',flexWrap:'wrap'}}>
+                  <div style={{fontSize:14,fontWeight:700,color:'var(--navy)',marginBottom:3}} className="truncate">{p.name}</div>
+                  <div style={{display:'flex',gap:5,alignItems:'center',flexWrap:'wrap'}}>
                     {posArr.slice(0,1).map(pos=>(
-                      <span key={pos} style={{fontSize:10,fontWeight:600,color:'rgba(255,255,255,.45)',background:'rgba(255,255,255,.07)',padding:'2px 8px',borderRadius:6}}>{pos}</span>
+                      <span key={pos} style={{fontSize:10,fontWeight:600,color:'var(--g500)',background:'var(--g100)',padding:'2px 7px',borderRadius:5}}>{pos}</span>
                     ))}
-                    <span style={{display:'flex',alignItems:'center',gap:4,fontSize:10,fontWeight:600,color:STATUS_COLORS[p.status]||'var(--g400)'}}>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:10,fontWeight:600,color:STATUS_COLORS[p.status]||'var(--g400)',background:STATUS_BG[p.status]||'var(--g100)',padding:'2px 7px',borderRadius:5}}>
                       <span style={{width:5,height:5,borderRadius:'50%',background:STATUS_COLORS[p.status]||'var(--g400)',display:'inline-block'}}/>
                       {p.status}
                     </span>
                   </div>
                 </div>
                 {/* Chevron */}
-                <div style={{fontSize:14,color:'rgba(255,255,255,.2)',flexShrink:0}}>›</div>
+                <div style={{fontSize:18,color:'var(--g300)',flexShrink:0,lineHeight:1}}>›</div>
               </div>
             )
           })}

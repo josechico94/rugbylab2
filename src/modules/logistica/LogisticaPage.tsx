@@ -203,7 +203,7 @@ export default function LogisticaPage(){
   ]
 
   return(
-    <div className="fade-in" style={{padding: isMobile ? "14px 14px 0" : undefined}}>
+    <div className="fade-in" style={{padding: isMobile ? "16px 16px 0" : undefined}}>
       {toast&&<div className="toast ok">{toast}</div>}
       {loginOpen&&<LoginModal onClose={()=>setLoginOpen(false)} showToast={showToast}/>}
       {profileId&&<ProfileModal playerId={profileId} players={players} tx={tx} events={events} onClose={()=>setProfileId(null)}/>}

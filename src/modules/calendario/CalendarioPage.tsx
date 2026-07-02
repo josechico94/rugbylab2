@@ -175,7 +175,7 @@ export default function CalendarioPage() {
   const cells = buildCalendar()
 
   return (
-    <div className="fade-in" style={{padding: isMobile ? "14px 14px 0" : undefined}}>
+    <div className="fade-in" style={{padding: isMobile ? "16px 16px 0" : undefined}}>
       {toast && <div style={{ position: 'fixed', top: 20, right: 24, zIndex: 1000, background: toast.ok ? 'var(--navy)' : 'var(--red)', color: '#fff', padding: '12px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600 }}>{toast.msg}</div>}
 
       {/* Próximos 7 días strip */}

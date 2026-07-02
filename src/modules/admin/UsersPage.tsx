@@ -147,7 +147,7 @@ export default function UsersPage() {
   const jugadores = users.filter(u => u.role === 'jugador').length
 
   return (
-    <div className="fade-in" style={{padding: isMobile ? "14px 14px 0" : undefined}}>
+    <div className="fade-in" style={{padding: isMobile ? "16px 16px 0" : undefined}}>
 
       {/* Toast */}
       {toast && (

@@ -203,7 +203,7 @@ export default function EntrenamientosPage() {
     const link = active.type === 'link' ? detectLinkType(active.url) : null
     const meta = rt(active.type)
     return (
-      <div className="fade-in" style={{padding: isMobile ? "14px 14px 0" : undefined}}>
+      <div className="fade-in" style={{padding: isMobile ? "16px 16px 0" : undefined}}>
         {toast && <Toast msg={toast.msg} type={toast.ok ? 'ok' : 'err'} />}
         <button onClick={() => setActive(null)} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 18, border: 'none', background: 'transparent', color: 'var(--red)', fontSize: 13, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
           ← Torna alla libreria

@@ -195,7 +195,7 @@ export default function MedicoPage() {
   const altas         = lesiones.filter(l => l.estado === 'alta_medica').length
 
   return (
-    <div className="fade-in" style={{padding: isMobile ? "14px 14px 0" : undefined}}>
+    <div className="fade-in" style={{padding: isMobile ? "16px 16px 0" : undefined}}>
       {toast && <div style={{ position: 'fixed', top: 20, right: 24, zIndex: 1000, background: toast.ok ? 'var(--navy)' : 'var(--red)', color: '#fff', padding: '12px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600 }}>{toast.msg}</div>}
 
       {/* Stats */}
@@ -219,7 +219,53 @@ export default function MedicoPage() {
 
       {loading ? <div style={{ textAlign: 'center', padding: 40, color: 'var(--g300)' }}>Caricamento...</div>
       : lesiones.length === 0 ? <EmptyState icon="🏥" title="Nessun infortunio registrato" desc={canEdit ? 'Clicca su "+ Registra infortunio"' : 'Nessun infortunio registrato'} />
-      : (
+      : isMobile ? (
+        /* ── MOBILE: injury cards ── */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {filtered.length === 0
+            ? <div style={{ textAlign: 'center', padding: '40px 16px', background: 'var(--white)', borderRadius: 12 }}><EmptyState icon="🔍" title="Nessun risultato" desc="Prova con un altro filtro" /></div>
+            : filtered.map((l) => {
+              const es = estadoStyle(l.estado)
+              const days = Math.floor((Date.now() - new Date(l.fechaLesion).getTime()) / 86400000)
+              return (
+                <div key={l.id}
+                  onClick={() => { setActive(l); setModal('detail') }}
+                  style={{ background: 'var(--white)', borderBottom: '1px solid var(--g100)', padding: '14px 16px', cursor: 'pointer', transition: 'background .12s' }}
+                  onTouchStart={e => e.currentTarget.style.background = 'var(--g50)'}
+                  onTouchEnd={e => e.currentTarget.style.background = 'var(--white)'}
+                >
+                  {/* Row 1: name + status pill */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--navy)' }}>{l.playerName}</div>
+                    <EstadoPill estado={l.estado} />
+                  </div>
+                  {/* Row 2: zona + days */}
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <span style={{ fontSize: 11, color: 'var(--g500)', background: 'var(--g100)', padding: '2px 8px', borderRadius: 6, fontWeight: 600 }}>{zonaLabel(l.zona)}</span>
+                    <span style={{ fontSize: 11, color: 'var(--g400)' }}>{days === 0 ? 'Oggi' : `${days} giorni fa`}</span>
+                    {l.fechaAltaEstimada && (
+                      <span style={{ fontSize: 11, color: diasHasta(l.fechaAltaEstimada) === 'Scaduto' ? 'var(--red)' : 'var(--g400)' }}>
+                        Alta: {diasHasta(l.fechaAltaEstimada)}
+                      </span>
+                    )}
+                  </div>
+                  {/* Row 3: edit actions */}
+                  {canEdit && (
+                    <div style={{ display: 'flex', gap: 8, marginTop: 10 }} onClick={e => e.stopPropagation()}>
+                      <select value={l.estado} onChange={e => quickEstado(l, e.target.value as LesionEstado)}
+                        style={{ flex: 1, background: es.bg, color: es.color, border: `1px solid ${es.color}22`, borderRadius: 8, padding: '6px 10px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                        {ESTADOS.map(e => <option key={e.id} value={e.id}>{e.label}</option>)}
+                      </select>
+                      <button onClick={() => openEdit(l)} style={{ padding: '6px 14px', border: '1px solid var(--g200)', borderRadius: 8, background: 'var(--g50)', color: 'var(--red)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Modifica</button>
+                      <button onClick={() => { setActive(l); setModal('delete') }} style={{ padding: '6px 10px', border: '1px solid #FEECEC', borderRadius: 8, background: 'var(--red-l)', color: 'var(--red)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>✕</button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+        </div>
+      ) : (
+        /* ── DESKTOP: scrollable table ── */
         <div className="card">
           <div className="table-scroll-wrap">
           {/* Header */}
@@ -253,11 +299,8 @@ export default function MedicoPage() {
                 </div>
                 <div>
                   {canEdit ? (
-                    <select
-                      value={l.estado}
-                      onChange={e => quickEstado(l, e.target.value as LesionEstado)}
-                      style={{ background: es.bg, color: es.color, border: 'none', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
-                    >
+                    <select value={l.estado} onChange={e => quickEstado(l, e.target.value as LesionEstado)}
+                      style={{ background: es.bg, color: es.color, border: 'none', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
                       {ESTADOS.map(e => <option key={e.id} value={e.id}>{e.label}</option>)}
                     </select>
                   ) : <EstadoPill estado={l.estado} />}
@@ -272,7 +315,7 @@ export default function MedicoPage() {
               </div>
             )
           })}
-          </div>{/* /table-scroll-wrap */}
+          </div>
         </div>
       )}
 

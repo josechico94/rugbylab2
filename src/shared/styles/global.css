@@ -416,16 +416,16 @@ select.input{
 @media (max-width:768px) {
 
   body,#root { background:var(--paper) }
-  .mobile-scroll { background:var(--paper); -webkit-overflow-scrolling:touch }
+  .mobile-scroll { background:var(--paper) !important; -webkit-overflow-scrolling:touch }
 
   /* TOP BAR */
   .mobile-topbar {
-    background:rgba(255,255,255,.95);
+    background:rgba(255,255,255,.96) !important;
     backdrop-filter:saturate(180%) blur(20px);
     -webkit-backdrop-filter:saturate(180%) blur(20px);
-    border-bottom:1px solid rgba(10,22,40,.07);
+    border-bottom:1px solid rgba(10,22,40,.08) !important;
     position:sticky; top:0; z-index:100;
-    box-shadow:0 1px 0 rgba(10,22,40,.05);
+    box-shadow:0 1px 0 rgba(10,22,40,.06) !important;
   }
 
   /* BOTTOM NAV */
@@ -469,7 +469,7 @@ select.input{
   .bnav-btn:not(.active):active .nav-icon-wrap { transform:scale(.9); background:rgba(255,255,255,.07) }
 
   /* PAGE PADDING */
-  .page { padding:16px 16px 0 !important }
+  .page { padding:0 !important }
 
   /* HERO */
   .hero {
@@ -703,13 +703,13 @@ select option { background: var(--white); color: var(--navy) }
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
     scrollbar-width: none !important;
-    margin-left: -14px !important;
-    margin-right: -14px !important;
+    margin-left: -16px !important;
+    margin-right: -16px !important;
     padding: 0 !important;
-    min-width: 100% !important;
+    border-radius: 0 !important;
   }
   .table-scroll-wrap::-webkit-scrollbar { display: none !important }
-  .table-scroll-wrap > * { padding-left: 14px; padding-right: 14px; }
+  .table-scroll-wrap > * { min-width: max-content }
 
   /* ── GRID COLUMNS → 2-col on mobile ─── */
   [style*="grid-template-columns: repeat(3, 1fr)"],

@@ -198,7 +198,7 @@ export default function GimnasioPage(){
   const doneN=active?.days.filter(d=>d.completed).length??0
 
   return(
-    <div className="fade-in" style={{padding: isMobile ? "14px 14px 0" : undefined}}>
+    <div className="fade-in" style={{padding: isMobile ? "16px 16px 0" : undefined}}>
       {showScanner && <PhotoScanner mode="exercise" onClose={() => setShowScanner(false)} onResult={onScanResult}/>}
       {toast&&<Toast msg={toast.msg} type={toast.ok?'ok':'err'}/>}
       <div className="stats-grid" style={{marginBottom:22}}>

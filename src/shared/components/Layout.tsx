@@ -160,7 +160,7 @@ export default function Layout() {
     <div style={{
       display:'flex',flexDirection:'column',
       height:'100dvh',overflow:'hidden',
-      background:'#050A12',
+      background:'var(--paper)',
     }}>
       {/* TOP BAR */}
       <header className="mobile-topbar" style={{
@@ -172,37 +172,37 @@ export default function Layout() {
       }}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <div style={{
-            width:36,height:36,borderRadius:11,flexShrink:0,
+            width:34,height:34,borderRadius:10,flexShrink:0,
             background:'linear-gradient(140deg,#C8102E 0%,#7A0A1E 100%)',
             display:'flex',alignItems:'center',justifyContent:'center',
-            boxShadow:'0 4px 14px rgba(200,16,46,.45)',
+            boxShadow:'0 3px 10px rgba(200,16,46,.35)',
           }}>
-            <svg viewBox="0 0 28 28" fill="none" style={{width:20,height:20}}>
+            <svg viewBox="0 0 28 28" fill="none" style={{width:18,height:18}}>
               <ellipse cx="14" cy="14" rx="10" ry="6" stroke="#fff" strokeWidth="1.8" transform="rotate(-35 14 14)"/>
               <path d="M7 8l14 12M11 6l6 16" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" opacity=".7"/>
             </svg>
           </div>
           <div>
-            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:19,letterSpacing:'.07em',color:'#fff',lineHeight:1}}>RUGBYLAB</div>
-            <div style={{fontSize:9.5,color:'rgba(255,255,255,.38)',textTransform:'uppercase',letterSpacing:'.1em',marginTop:1.5}}>{meta.title}</div>
+            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,letterSpacing:'.07em',color:'var(--navy)',lineHeight:1}}>RUGBYLAB</div>
+            <div style={{fontSize:9.5,color:'var(--g400)',textTransform:'uppercase',letterSpacing:'.1em',marginTop:1.5}}>{meta.title}</div>
           </div>
         </div>
-        <div style={{display:'flex',gap:9,alignItems:'center'}}>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
           <button style={{
-            width:36,height:36,borderRadius:11,border:'none',
-            background:'rgba(255,255,255,.09)',cursor:'pointer',position:'relative',
+            width:34,height:34,borderRadius:10,border:'1.5px solid var(--g100)',
+            background:'var(--white)',cursor:'pointer',position:'relative',
             display:'flex',alignItems:'center',justifyContent:'center',
-            color:'rgba(255,255,255,.7)',
+            color:'var(--g500)',
           }}>
             <IconBell/>
-            <span style={{position:'absolute',top:8,right:8,width:7,height:7,borderRadius:'50%',background:'#C8102E',boxShadow:'0 0 6px #C8102E',border:'1.5px solid #050A12'}}/>
+            <span style={{position:'absolute',top:8,right:8,width:6,height:6,borderRadius:'50%',background:'var(--red)',border:'1.5px solid #fff'}}/>
           </button>
           <div style={{
-            width:36,height:36,borderRadius:11,
+            width:34,height:34,borderRadius:10,
             background:'linear-gradient(140deg,#C8102E 0%,#7A0A1E 100%)',
             display:'flex',alignItems:'center',justifyContent:'center',
-            fontFamily:"'Bebas Neue',sans-serif",fontSize:15,letterSpacing:'.04em',color:'#fff',
-            boxShadow:'0 3px 10px rgba(200,16,46,.4)',
+            fontFamily:"'Bebas Neue',sans-serif",fontSize:14,letterSpacing:'.04em',color:'#fff',
+            boxShadow:'0 2px 8px rgba(200,16,46,.35)',
           }}>{ini}</div>
         </div>
       </header>
@@ -210,7 +210,7 @@ export default function Layout() {
       {/* SCROLL CONTENT */}
       <main className="mobile-scroll" style={{
         flex:1,overflowY:'auto',overflowX:'hidden',
-        background:'#050A12',
+        background:'var(--paper)',
         paddingBottom:'calc(80px + env(safe-area-inset-bottom, 0px))',
         WebkitOverflowScrolling:'touch',
       }}>
