@@ -143,6 +143,22 @@ select.input{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmln
 .modal-x:hover{background:var(--g200);color:var(--navy)}
 .modal-body{padding:20px 24px 24px;max-height:75dvh;overflow-y:auto}
 
+/* ── MODAL — FULLSCREEN VARIANT (formularios modifica/agrega) ── */
+.overlay-full{padding:0}
+.modal-full{
+  width:100%;max-width:100%;height:100dvh;max-height:100dvh;
+  border-radius:0;display:flex;flex-direction:column;
+  animation:modalFullIn .24s cubic-bezier(.16,1,.3,1);
+}
+@keyframes modalFullIn{from{opacity:0;transform:translateY(18px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal-full .modal-hdr{flex-shrink:0;padding:20px 32px}
+.modal-full .modal-title{font-size:22px}
+.modal-full .modal-x{width:36px;height:36px;font-size:18px}
+.modal-full .modal-body{flex:1;min-height:0;max-height:none;overflow-y:auto;padding:32px 32px 44px}
+.modal-full .modal-body>*{max-width:1080px;width:100%;margin-left:auto;margin-right:auto}
+.modal-full .btn{min-height:46px;padding:12px 22px;font-size:14px}
+.modal-actions{display:flex;gap:12px;padding-top:20px;margin-top:10px;border-top:1px solid var(--g100)}
+
 /* ── TABLE ──────────────────────────────────────── */
 .tbl{width:100%;border-collapse:collapse;font-size:13px}
 .tbl th{text-align:left;padding:9px 16px;font-size:10px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.07em;background:var(--g50);border-bottom:1px solid var(--g100);white-space:nowrap}
@@ -374,6 +390,13 @@ select.input{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmln
   .modal-x { background:rgba(255,255,255,.08) !important; color:rgba(255,255,255,.5) !important; border:none !important }
   .modal-body { color:rgba(255,255,255,.78) !important; padding:16px 18px 28px !important }
 
+  /* ── MODAL FULLSCREEN — true device-size page on mobile ─── */
+  .modal-full { height:100dvh !important; max-height:100dvh !important; border-radius:0 !important }
+  .modal-full::before { display:none !important }
+  .modal-full .modal-hdr { padding:calc(14px + env(safe-area-inset-top,0px)) 18px 12px !important }
+  .modal-full .modal-body { padding:18px 18px calc(32px + env(safe-area-inset-bottom,0px)) !important }
+  .modal-actions { border-color:rgba(255,255,255,.1) !important }
+
   /* ── EMPTY STATE ─── */
   .empty-title { color:rgba(255,255,255,.4) !important }
   .empty-desc  { color:rgba(255,255,255,.25) !important }
@@ -462,3 +485,73 @@ select.input{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmln
 
 /* ── LARGE DESKTOP ─── */
 @media (min-width:1600px) { .page { padding:28px 40px } }
+
+/* ================================================================
+   SELECTOR / PICKER — botón + máscara pantalla completa
+   Siempre en tema claro con texto negro, aunque el resto esté en
+   modo oscuro, para garantizar legibilidad total de las opciones.
+   ================================================================ */
+.picker-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;max-width:320px;padding:10px 13px;border:1.5px solid var(--g200);border-radius:var(--r-sm);background:#fff;color:var(--navy);font-size:13.5px;font-weight:600;cursor:pointer;transition:border-color .14s,box-shadow .14s;text-align:left}
+.picker-trigger:hover{border-color:var(--g300)}
+.picker-trigger:focus-visible{border-color:var(--navy-soft);box-shadow:0 0 0 3px rgba(10,22,40,.08);outline:none}
+.picker-trigger .picker-trigger-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--navy)}
+.picker-trigger .picker-trigger-placeholder{color:var(--g400);font-weight:500}
+.picker-trigger .picker-chev{color:var(--g400);font-size:11px;flex-shrink:0}
+
+.modal-picker,.modal-picker .modal-hdr,.modal-picker .modal-body{background:#fff !important;color:var(--navy) !important}
+.modal-picker .modal-hdr{border-color:var(--g100) !important}
+.modal-picker .modal-title{color:var(--navy) !important}
+.modal-picker .modal-x{background:var(--g100) !important;color:var(--g500) !important}
+.modal-picker::before{display:none !important}
+
+.picker-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:16px 18px;border:1.5px solid var(--g100) !important;border-radius:12px;background:#fff !important;color:var(--navy) !important;font-size:14px;font-weight:700;text-align:left;cursor:pointer;transition:all .14s;margin-bottom:10px}
+.picker-row:hover{border-color:var(--g300) !important;background:var(--g50) !important}
+.picker-row.active{border-color:var(--red) !important;background:var(--red-l) !important;color:var(--red) !important}
+.picker-row-sub{font-size:12px;font-weight:500;color:var(--g400) !important;margin-top:3px}
+.picker-row-check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--g200);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:#fff;background:transparent}
+.picker-row.active .picker-row-check{background:var(--red);border-color:var(--red)}
+.picker-empty{padding:40px 20px;text-align:center;color:var(--g400) !important}
+
+/* ── LOGIN — el panel del formulario es siempre claro, incluso con el
+   tema oscuro móvil activo (que de lo contrario deja los inputs
+   invisibles: texto blanco sobre fondo blanco) ─────────────────── */
+.login-panel .input{background:#fff !important;border-color:var(--g200) !important;color:var(--navy) !important}
+.login-panel .input:focus{border-color:var(--red) !important;box-shadow:0 0 0 3px rgba(200,16,46,.1) !important}
+.login-panel .input::placeholder{color:var(--g300) !important}
+
+/* ── LOGIN — detalles premium ────────────────────────────────────── */
+@keyframes loginIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.login-anim{animation:loginIn .6s cubic-bezier(.16,1,.3,1) both}
+
+@keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(62,213,152,.45)}50%{box-shadow:0 0 0 5px rgba(62,213,152,0)}}
+.login-kicker{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.65);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:22px}
+.login-kicker-dot{width:6px;height:6px;border-radius:50%;background:#3ED598;animation:pulseDot 2.2s ease-in-out infinite}
+
+.login-feature{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid rgba(255,255,255,.07)}
+.login-feature:last-child{border-bottom:none}
+.login-feature-ic{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)}
+
+.field-label{font-size:11px;font-weight:700;color:var(--g400) !important;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.field-wrap{position:relative;display:flex;align-items:center}
+.field-ic{position:absolute;left:13px;display:flex;color:var(--g300);pointer-events:none;z-index:1}
+.field-toggle{position:absolute;right:12px;display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;color:var(--g300);padding:4px;border-radius:6px;transition:color .14s}
+.field-toggle:hover{color:var(--g500)}
+
+.seg-track{position:relative;display:flex;background:var(--g50) !important;border-radius:10px;padding:3px;margin-bottom:22px}
+.seg-thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:#fff;border-radius:8px;box-shadow:0 1px 6px rgba(10,22,40,.14);transition:transform .3s cubic-bezier(.34,1.4,.64,1)}
+.seg-btn{position:relative;z-index:1;flex:1;padding:9px 8px;border:none;background:transparent;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;transition:color .2s}
+
+.login-error{display:flex;align-items:flex-start;gap:9px;background:var(--red-l) !important;color:var(--red) !important;font-size:13px;padding:11px 14px;border-radius:10px;margin-bottom:16px;font-weight:500;border-left:3px solid var(--red)}
+
+.login-submit{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border:none;border-radius:11px;background:linear-gradient(155deg,var(--navy) 0%,#050C18 100%);color:#fff;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.05em;transition:transform .12s,box-shadow .2s;font-family:'Bebas Neue',sans-serif;box-shadow:0 10px 26px rgba(10,22,40,.28)}
+.login-submit:hover{box-shadow:0 12px 32px rgba(10,22,40,.36)}
+.login-submit:active{transform:scale(.985)}
+.login-submit:disabled{cursor:not-allowed;opacity:.75;box-shadow:none}
+.login-submit::after{content:'';position:absolute;top:0;left:-60%;width:35%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.16),transparent);transform:skewX(-18deg);transition:left .55s ease}
+.login-submit:hover::after{left:130%}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:15px;height:15px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:spin .7s linear infinite;display:inline-block;flex-shrink:0}
+
+.login-note{margin-top:22px;padding:13px 15px;background:var(--g50) !important;border-radius:10px;display:flex;gap:10px;align-items:flex-start;color:var(--g400) !important;font-size:12px;line-height:1.55}
+.login-note svg{flex-shrink:0;margin-top:1px;color:var(--g300)}

@@ -70,7 +70,7 @@ export default function GimnasioPage(){
   const [active,setActive]=useState<Rt|null>(null)
   const [aDay,setADay]=useState<RD|null>(null)
   const [tab,setTab]=useState<'r'|'e'>('r')
-  const [modal,setModal]=useState<'none'|'form'|'del'>('none')
+  const [modal,setModal]=useState<'none'|'form'|'del'|'picker'>('none')
   const [saving,setSaving]=useState(false)
   const [toast,setToast]=useState<{msg:string;ok:boolean}|null>(null)
   const [fPid,setFPid]=useState('')
@@ -209,7 +209,12 @@ export default function GimnasioPage(){
 
       {canEdit&&(
         <div style={{display:'flex',gap:10,marginBottom:18,flexWrap:'wrap',alignItems:'center'}}>
-          {rts.length>0&&<select className="input" style={{maxWidth:320}} value={active?.id??''} onChange={e=>{const r=rts.find(r=>r.id===e.target.value)??null;setActive(r);setADay(r?.days[0]??null)}}><option value="">— Seleziona scheda —</option>{rts.map(r=><option key={r.id} value={r.id}>{pName(r.playerId)} — Settimana {r.week}/{r.year}</option>)}</select>}
+          {rts.length>0&&(
+            <button type="button" className="picker-trigger" style={{maxWidth:320}} onClick={()=>setModal('picker')}>
+              <span className={active?'picker-trigger-label':'picker-trigger-placeholder'}>{active?`${pName(active.playerId)} — Settimana ${active.week}/${active.year}`:'— Seleziona scheda —'}</span>
+              <span className="picker-chev">▾</span>
+            </button>
+          )}
           <button onClick={openCreate} className="btn btn-red">+ Nuova scheda</button>
             <button onClick={() => setShowScanner(true)} className="btn btn-ghost btn-sm" style={{display:'flex',alignItems:'center',gap:6}}>📷 Scansiona scheda</button>
           {active&&<>
@@ -311,10 +316,35 @@ export default function GimnasioPage(){
         </div>
       )}
 
+      {/* PICKER — SELEZIONA SCHEDA */}
+      {modal==='picker'&&(
+        <div className="overlay overlay-full" onClick={()=>setModal('none')}>
+          <div className="modal modal-full modal-picker" onClick={e=>e.stopPropagation()}>
+            <div className="modal-hdr">
+              <div className="modal-title">SELEZIONA SCHEDA</div>
+              <button className="modal-x" onClick={()=>setModal('none')}>×</button>
+            </div>
+            <div className="modal-body">
+              {rts.length===0?(
+                <div className="picker-empty">Nessuna scheda disponibile</div>
+              ):rts.map(r=>(
+                <button key={r.id} type="button" className={`picker-row${active?.id===r.id?' active':''}`} onClick={()=>{setActive(r);setADay(r.days[0]??null);setModal('none')}}>
+                  <div>
+                    <div>{pName(r.playerId)}</div>
+                    <div className="picker-row-sub">Settimana {r.week}/{r.year} · {r.days.length} giorni</div>
+                  </div>
+                  <div className="picker-row-check">{active?.id===r.id?'✓':''}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* FORM MODAL */}
       {modal==='form'&&(
-        <div className="overlay" onClick={()=>setModal('none')}>
-          <div className="modal" style={{maxWidth:800,maxHeight:'90dvh',overflowY:'auto'}} onClick={e=>e.stopPropagation()}>
+        <div className="overlay overlay-full" onClick={()=>setModal('none')}>
+          <div className="modal modal-full" onClick={e=>e.stopPropagation()}>
             <div className="modal-hdr">
               <div><div className="modal-title">{active?'MODIFICA SCHEDA':'NUOVA SCHEDA'}</div><div style={{fontSize:12,color:'var(--g400)',marginTop:2}}>Organizza per blocchi con serie individualizzate</div></div>
               <button className="modal-x" onClick={()=>setModal('none')}>×</button>
@@ -398,7 +428,7 @@ export default function GimnasioPage(){
                   )})}
                 </div>
               ))}
-              <div style={{display:'flex',gap:10,paddingTop:14,borderTop:'1px solid var(--g100)'}}>
+              <div className="modal-actions">
                 <button onClick={()=>setModal('none')} className="btn btn-ghost" style={{flex:1}}>Annulla</button>
                 <button onClick={handleSave} disabled={saving||!fPid} className="btn btn-red" style={{flex:2,opacity:saving||!fPid?0.6:1}}>{saving?'Salvataggio...':'Salva scheda'}</button>
               </div>

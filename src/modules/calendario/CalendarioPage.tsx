@@ -333,13 +333,13 @@ export default function CalendarioPage() {
 
       {/* ── FORM MODAL ── */}
       {modal === 'form' && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,34,24,0.55)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 500, padding: 20, overflowY: 'auto' }}>
-          <div style={{ background: '#fff', borderRadius: 16, width: '100%', maxWidth: 540, animation: 'fadeIn 0.15s ease', marginTop: 20, marginBottom: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 28px 16px', borderBottom: '1px solid var(--g100)', position: 'sticky', top: 0, background: '#fff', zIndex: 1, borderRadius: '16px 16px 0 0' }}>
-              <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: 'var(--navy)' }}>{active ? 'Modifica evento' : 'Nuovo evento'}</h2>
-              <button onClick={() => setModal('none')} style={{ width: 32, height: 32, border: 'none', background: 'var(--g100)', borderRadius: '50%', fontSize: 18, color: 'var(--g400)', cursor: 'pointer' }}>×</button>
+        <div className="overlay overlay-full" onClick={() => setModal('none')}>
+          <div className="modal modal-full" onClick={e => e.stopPropagation()}>
+            <div className="modal-hdr">
+              <div className="modal-title">{active ? 'MODIFICA EVENTO' : 'NUOVO EVENTO'}</div>
+              <button className="modal-x" onClick={() => setModal('none')}>×</button>
             </div>
-            <div style={{ padding: '22px 28px 28px' }}>
+            <div className="modal-body">
 
               {/* Tipo */}
               <div style={{ marginBottom: 16 }}>
@@ -399,9 +399,9 @@ export default function CalendarioPage() {
                 </button>
               </div>
 
-              <div style={{ display: 'flex', gap: 10, paddingTop: 12, borderTop: '1px solid var(--g100)' }}>
-                <button onClick={() => setModal('none')} style={{ flex: 1, padding: 12, border: '1px solid var(--g100)', borderRadius: 10, background: '#fff', color: 'var(--g500)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Annulla</button>
-                <button onClick={handleSave} disabled={saving} style={{ flex: 2, padding: 12, border: 'none', borderRadius: 10, background: saving ? '#C5D5C9' : 'var(--red)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+              <div className="modal-actions">
+                <button onClick={() => setModal('none')} className="btn btn-ghost" style={{ flex: 1 }}>Annulla</button>
+                <button onClick={handleSave} disabled={saving} className="btn btn-red" style={{ flex: 2, opacity: saving ? 0.6 : 1 }}>
                   {saving ? 'Salvataggio...' : active ? 'Salva modifiche' : 'Crea evento'}
                 </button>
               </div>

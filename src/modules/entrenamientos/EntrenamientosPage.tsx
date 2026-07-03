@@ -391,8 +391,8 @@ function FormModal({ form, setForm, file, setFile, fileRef, onFileChange, toggle
   const isLink = form.type === 'link'
 
   return (
-    <div className="overlay" onClick={onClose}>
-      <div className="modal" style={{ maxWidth: 600, maxHeight: '92dvh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+    <div className="overlay overlay-full" onClick={onClose}>
+      <div className="modal modal-full" onClick={e => e.stopPropagation()}>
         <div className="modal-hdr">
           <div>
             <div className="modal-title">{editing ? 'MODIFICA RISORSA' : 'CARICA RISORSA'}</div>
@@ -494,7 +494,7 @@ function FormModal({ form, setForm, file, setFile, fileRef, onFileChange, toggle
             </select>
           </div>
 
-          <div style={{ display: 'flex', gap: 10, paddingTop: 14, borderTop: '1px solid var(--g100)' }}>
+          <div className="modal-actions">
             <button onClick={onClose} className="btn btn-ghost" style={{ flex: 1 }}>Annulla</button>
             <button onClick={onSave} disabled={saving} className="btn btn-red" style={{ flex: 2, opacity: saving ? 0.6 : 1 }}>
               {saving ? (uploadPct !== null ? 'Caricamento file...' : 'Salvataggio...') : editing ? 'Salva modifiche' : 'Carica nella libreria'}

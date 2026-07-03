@@ -346,8 +346,8 @@ export default function PlantelPage() {
 
       {/* ── FORM MODAL ── */}
       {modal.type==='form'&&(
-        <div className="overlay" onClick={()=>setModal({type:'none'})}>
-          <div className="modal" style={{maxWidth:620,maxHeight:'92dvh',overflowY:'auto'}} onClick={e=>e.stopPropagation()}>
+        <div className="overlay overlay-full" onClick={()=>setModal({type:'none'})}>
+          <div className="modal modal-full" onClick={e=>e.stopPropagation()}>
             <div className="modal-hdr">
               <div>
                 <div className="modal-title">{modal.player?'MODIFICA GIOCATORE':'NUOVO GIOCATORE'}</div>
@@ -447,7 +447,7 @@ export default function PlantelPage() {
                 <div style={{fontSize:11,color:'var(--g300)',marginTop:3}}>{form.notes.length} / 500</div>
               </div>
 
-              <div style={{display:'flex',gap:10,paddingTop:14,borderTop:'1px solid var(--g100)'}}>
+              <div className="modal-actions">
                 <button onClick={()=>setModal({type:'none'})} className="btn btn-ghost" style={{flex:1}}>Annulla</button>
                 <button onClick={handleSave} disabled={saving||uploading} className="btn btn-red" style={{flex:2,opacity:saving||uploading?0.6:1}}>
                   {uploading?'Caricamento foto...':saving?'Salvataggio...':modal.player?'Salva modifiche':'Crea giocatore'}
