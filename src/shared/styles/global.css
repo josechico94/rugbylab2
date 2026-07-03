@@ -516,5 +516,42 @@ select.input{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmln
    tema oscuro móvil activo (que de lo contrario deja los inputs
    invisibles: texto blanco sobre fondo blanco) ─────────────────── */
 .login-panel .input{background:#fff !important;border-color:var(--g200) !important;color:var(--navy) !important}
-.login-panel .input:focus{border-color:var(--navy-soft) !important;box-shadow:0 0 0 3px rgba(10,22,40,.08) !important}
+.login-panel .input:focus{border-color:var(--red) !important;box-shadow:0 0 0 3px rgba(200,16,46,.1) !important}
 .login-panel .input::placeholder{color:var(--g300) !important}
+
+/* ── LOGIN — detalles premium ────────────────────────────────────── */
+@keyframes loginIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.login-anim{animation:loginIn .6s cubic-bezier(.16,1,.3,1) both}
+
+@keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(62,213,152,.45)}50%{box-shadow:0 0 0 5px rgba(62,213,152,0)}}
+.login-kicker{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.65);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:22px}
+.login-kicker-dot{width:6px;height:6px;border-radius:50%;background:#3ED598;animation:pulseDot 2.2s ease-in-out infinite}
+
+.login-feature{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid rgba(255,255,255,.07)}
+.login-feature:last-child{border-bottom:none}
+.login-feature-ic{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)}
+
+.field-label{font-size:11px;font-weight:700;color:var(--g400) !important;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.field-wrap{position:relative;display:flex;align-items:center}
+.field-ic{position:absolute;left:13px;display:flex;color:var(--g300);pointer-events:none;z-index:1}
+.field-toggle{position:absolute;right:12px;display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;color:var(--g300);padding:4px;border-radius:6px;transition:color .14s}
+.field-toggle:hover{color:var(--g500)}
+
+.seg-track{position:relative;display:flex;background:var(--g50) !important;border-radius:10px;padding:3px;margin-bottom:22px}
+.seg-thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:#fff;border-radius:8px;box-shadow:0 1px 6px rgba(10,22,40,.14);transition:transform .3s cubic-bezier(.34,1.4,.64,1)}
+.seg-btn{position:relative;z-index:1;flex:1;padding:9px 8px;border:none;background:transparent;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;transition:color .2s}
+
+.login-error{display:flex;align-items:flex-start;gap:9px;background:var(--red-l) !important;color:var(--red) !important;font-size:13px;padding:11px 14px;border-radius:10px;margin-bottom:16px;font-weight:500;border-left:3px solid var(--red)}
+
+.login-submit{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border:none;border-radius:11px;background:linear-gradient(155deg,var(--navy) 0%,#050C18 100%);color:#fff;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.05em;transition:transform .12s,box-shadow .2s;font-family:'Bebas Neue',sans-serif;box-shadow:0 10px 26px rgba(10,22,40,.28)}
+.login-submit:hover{box-shadow:0 12px 32px rgba(10,22,40,.36)}
+.login-submit:active{transform:scale(.985)}
+.login-submit:disabled{cursor:not-allowed;opacity:.75;box-shadow:none}
+.login-submit::after{content:'';position:absolute;top:0;left:-60%;width:35%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.16),transparent);transform:skewX(-18deg);transition:left .55s ease}
+.login-submit:hover::after{left:130%}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:15px;height:15px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:spin .7s linear infinite;display:inline-block;flex-shrink:0}
+
+.login-note{margin-top:22px;padding:13px 15px;background:var(--g50) !important;border-radius:10px;display:flex;gap:10px;align-items:flex-start;color:var(--g400) !important;font-size:12px;line-height:1.55}
+.login-note svg{flex-shrink:0;margin-top:1px;color:var(--g300)}
