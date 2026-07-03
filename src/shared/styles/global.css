@@ -511,3 +511,10 @@ select.input{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmln
 .picker-row-check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--g200);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:#fff;background:transparent}
 .picker-row.active .picker-row-check{background:var(--red);border-color:var(--red)}
 .picker-empty{padding:40px 20px;text-align:center;color:var(--g400) !important}
+
+/* ── LOGIN — el panel del formulario es siempre claro, incluso con el
+   tema oscuro móvil activo (que de lo contrario deja los inputs
+   invisibles: texto blanco sobre fondo blanco) ─────────────────── */
+.login-panel .input{background:#fff !important;border-color:var(--g200) !important;color:var(--navy) !important}
+.login-panel .input:focus{border-color:var(--navy-soft) !important;box-shadow:0 0 0 3px rgba(10,22,40,.08) !important}
+.login-panel .input::placeholder{color:var(--g300) !important}

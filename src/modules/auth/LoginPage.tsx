@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
 import { auth, db } from '@/shared/firebase/config'
+import { useIsMobile } from '@/shared/hooks/useIsMobile'
 
 export default function LoginPage() {
   const nav = useNavigate()
+  const isMobile = useIsMobile(900)
   const [mode,setMode]   = useState<'login'|'register'>('login')
   const [email,setEmail] = useState('')
   const [pass,setPass]   = useState('')
@@ -35,9 +37,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{minHeight:'100dvh',background:'var(--navy)',display:'flex',overflow:'hidden',position:'relative'}}>
-      {/* Left panel — desktop only */}
-      <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:48,position:'relative',overflow:'hidden'}}>
+    <div style={{minHeight:'100dvh',background:'var(--navy)',display:'flex',flexDirection:isMobile?'column':'row',overflowY:isMobile?'auto':'hidden',overflowX:'hidden',position:'relative'}}>
+      {/* Hero panel — full branding on desktop, compact header on mobile */}
+      <div style={{flex:isMobile?'none':1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:isMobile?'clamp(28px,7vh,40px) 24px 22px':48,position:'relative',overflow:'hidden'}}>
         <div style={{position:'absolute',inset:0,pointerEvents:'none'}}>
           <div style={{position:'absolute',top:'-10%',right:'-5%',width:'50%',paddingBottom:'50%',borderRadius:'50%',background:'radial-gradient(circle,rgba(200,16,46,.22) 0%,transparent 70%)'}}/>
           <div style={{position:'absolute',bottom:'-10%',left:'-5%',width:'42%',paddingBottom:'42%',borderRadius:'50%',background:'radial-gradient(circle,rgba(245,197,24,.12) 0%,transparent 70%)'}}/>
@@ -46,13 +48,13 @@ export default function LoginPage() {
             <rect width="100%" height="100%" fill="url(#g)"/>
           </svg>
         </div>
-        <div style={{position:'relative',zIndex:1,textAlign:'center',maxWidth:380}}>
-          <div style={{width:80,height:80,borderRadius:20,background:'var(--red)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:36,margin:'0 auto 28px',boxShadow:'0 8px 32px rgba(200,16,46,.4)'}}>🏉</div>
-          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:58,letterSpacing:'.05em',color:'#fff',lineHeight:.9,marginBottom:12}}>
+        <div style={{position:'relative',zIndex:1,textAlign:'center',maxWidth:380,width:'100%'}}>
+          <div style={{width:isMobile?52:80,height:isMobile?52:80,borderRadius:isMobile?14:20,background:'var(--red)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:isMobile?24:36,margin:isMobile?'0 auto 14px':'0 auto 28px',boxShadow:'0 8px 32px rgba(200,16,46,.4)'}}>🏉</div>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:isMobile?38:58,letterSpacing:'.05em',color:'#fff',lineHeight:.9,marginBottom:isMobile?6:12}}>
             RUGBY<br/><span style={{color:'var(--gold)'}}>LAB</span>
           </div>
-          <div style={{color:'rgba(255,255,255,.4)',fontSize:13,letterSpacing:'.08em',textTransform:'uppercase',marginBottom:36}}>Bologna Rugby Club · Sistema Integrato</div>
-          {['🏃 Pianificazione fisica e nutrizione','📊 Statistiche e rendimento','🏉 Tattica e logistica del club'].map((f,i)=>(
+          <div style={{color:'rgba(255,255,255,.4)',fontSize:isMobile?11:13,letterSpacing:'.08em',textTransform:'uppercase',marginBottom:isMobile?0:36}}>Bologna Rugby Club · Sistema Integrato</div>
+          {!isMobile && ['🏃 Pianificazione fisica e nutrizione','📊 Statistiche e rendimento','🏉 Tattica e logistica del club'].map((f,i)=>(
             <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 16px',background:'rgba(255,255,255,.05)',borderRadius:10,marginBottom:8,textAlign:'left',border:'1px solid rgba(255,255,255,.06)'}}>
               <span style={{fontSize:16}}>{f.slice(0,2)}</span>
               <span style={{color:'rgba(255,255,255,.55)',fontSize:13}}>{f.slice(3)}</span>
@@ -61,11 +63,11 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right panel — form */}
-      <div style={{width:'min(440px,100%)',background:'#fff',display:'flex',flexDirection:'column',justifyContent:'center',padding:'48px clamp(20px,5vw,40px)',boxShadow:'-20px 0 60px rgba(0,0,0,.2)',position:'relative',flexShrink:0}}>
-        <div style={{position:'absolute',top:0,left:0,right:0,height:4,background:'linear-gradient(90deg,var(--red),var(--gold))'}}/>
-        <div style={{marginBottom:32}}>
-          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:'.05em',color:'var(--navy)',marginBottom:4}}>
+      {/* Form panel */}
+      <div className="login-panel" style={{width:isMobile?'100%':'min(440px,100%)',flex:isMobile?1:undefined,background:'#fff',display:'flex',flexDirection:'column',justifyContent:'center',padding:isMobile?'28px 22px calc(32px + env(safe-area-inset-bottom,0px))':'48px clamp(20px,5vw,40px)',boxShadow:isMobile?'none':'-20px 0 60px rgba(0,0,0,.2)',position:'relative',flexShrink:0,borderRadius:isMobile?'22px 22px 0 0':0}}>
+        <div style={{position:'absolute',top:0,left:0,right:0,height:4,background:'linear-gradient(90deg,var(--red),var(--gold))',borderRadius:isMobile?'22px 22px 0 0':0}}/>
+        <div style={{marginBottom:isMobile?24:32}}>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:isMobile?22:26,letterSpacing:'.05em',color:'var(--navy)',marginBottom:4}}>
             {mode==='login'?'ACCEDI AL SISTEMA':'CREA IL TUO ACCOUNT'}
           </div>
           <div style={{fontSize:13,color:'var(--g400)'}}>
