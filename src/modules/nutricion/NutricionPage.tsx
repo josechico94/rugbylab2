@@ -51,7 +51,7 @@ export default function NutricionPage() {
   const [loading, setL]       = useState(true)
   const [active, setActive]   = useState<NutritionPlan|null>(null)
   const [expanded, setExpanded] = useState<string|null>('Colazione')
-  const [modal, setModal]     = useState<'none'|'form'|'del'>('none')
+  const [modal, setModal]     = useState<'none'|'form'|'del'|'picker'>('none')
   const [scanner, setScanner] = useState(false)
   const [saving, setSaving]   = useState(false)
   const [toast, setToast]     = useState<{msg:string;ok:boolean}|null>(null)
@@ -201,10 +201,10 @@ export default function NutricionPage() {
       {canEdit && (
         <div style={{ display:'flex', gap:8, marginBottom:18, flexWrap:'wrap', alignItems:'center' }}>
           {plans.length > 0 && (
-            <select className="input" style={{ maxWidth:320 }} value={active?.id??''} onChange={e=>{const p=plans.find(x=>x.id===e.target.value)??null;setActive(p)}}>
-              <option value="">— Seleziona piano —</option>
-              {plans.map(p=><option key={p.id} value={p.id}>{pName(p.playerId)}</option>)}
-            </select>
+            <button type="button" className="picker-trigger" style={{ maxWidth:320 }} onClick={()=>setModal('picker')}>
+              <span className={active?'picker-trigger-label':'picker-trigger-placeholder'}>{active?pName(active.playerId):'— Seleziona piano —'}</span>
+              <span className="picker-chev">▾</span>
+            </button>
           )}
           <button onClick={openCreate} className="btn btn-red">+ Nuovo piano</button>
           {/* AI Scanner button — prominent */}
@@ -311,6 +311,31 @@ export default function NutricionPage() {
                 </div>
               )
             })}
+          </div>
+        </div>
+      )}
+
+      {/* ── PICKER — SELEZIONA PIANO ── */}
+      {modal==='picker' && (
+        <div className="overlay overlay-full" onClick={()=>setModal('none')}>
+          <div className="modal modal-full modal-picker" onClick={e=>e.stopPropagation()}>
+            <div className="modal-hdr">
+              <div className="modal-title">SELEZIONA PIANO</div>
+              <button className="modal-x" onClick={()=>setModal('none')}>×</button>
+            </div>
+            <div className="modal-body">
+              {plans.length===0?(
+                <div className="picker-empty">Nessun piano disponibile</div>
+              ):plans.map(p=>(
+                <button key={p.id} type="button" className={`picker-row${active?.id===p.id?' active':''}`} onClick={()=>{setActive(p);setModal('none')}}>
+                  <div>
+                    <div>{pName(p.playerId)}</div>
+                    <div className="picker-row-sub">{p.targetCalories} kcal · {p.targetProtein}g prot · {p.targetCarbs}g carb · {p.targetFat}g grassi</div>
+                  </div>
+                  <div className="picker-row-check">{active?.id===p.id?'✓':''}</div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
